@@ -78,8 +78,6 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
         }
-        // drivetrain.setControl(request.withVelocityX(1).withVelocityY(0).withRotationalRate(0));
-
     }
 
     @Override
@@ -88,7 +86,7 @@ public class Robot extends TimedRobot {
         double angleToGoalDegrees = constants.LIMELIGHT_ANGLE + targetOffsetAngle_Vertical;
         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
         double distanceFromLimelightToGoalInches = (constants.GOAL_HEIGHT - constants.LIMELIGHT_HEIGHT) / Math.tan(angleToGoalRadians);
-        System.out.println("DISTANCE: " + distanceFromLimelightToGoalInches);
+        // System.out.println("DISTANCE: " + distanceFromLimelightToGoalInches);
     }
 
     @Override
