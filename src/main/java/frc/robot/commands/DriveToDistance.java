@@ -25,7 +25,7 @@ public class DriveToDistance extends Command {
 
   private final PIDController xController = new PIDController(0.6, 0, 0.05);
   // Added yController for strafing. Low P (0.02) to prevent jitter.
-  private final PIDController yController = new PIDController(0.08, 0, 0);
+  private final PIDController yController = new PIDController(0.02, 0, 0);
   
 
   private final Constants constants = new Constants();
