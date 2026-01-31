@@ -5,10 +5,15 @@
 package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -19,6 +24,20 @@ public class Robot extends TimedRobot {
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
         .withTimestampReplay()
         .withJoystickReplay();
+
+    NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+
+    Constants constants = new Constants();
+
+    double targetOffsetAngle_Vertical = 0;
+    double angleToGoalDegrees = 0;
+    double angleToGoalRadians = 0;
+    double limelightDistanceToTarget = 0;
+
+    private final SwerveRequest.RobotCentric request = new SwerveRequest.RobotCentric();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+
 
     public Robot() {
         m_robotContainer = new RobotContainer();
@@ -59,10 +78,18 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
         }
+        // drivetrain.setControl(request.withVelocityX(1).withVelocityY(0).withRotationalRate(0));
+
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        targetOffsetAngle_Vertical = limelight.getEntry("ty").getDouble(0);
+        double angleToGoalDegrees = constants.LIMELIGHT_ANGLE + targetOffsetAngle_Vertical;
+        double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+        double distanceFromLimelightToGoalInches = (constants.GOAL_HEIGHT - constants.LIMELIGHT_HEIGHT) / Math.tan(angleToGoalRadians);
+        System.out.println("DISTANCE: " + distanceFromLimelightToGoalInches);
+    }
 
     @Override
     public void teleopExit() {}
