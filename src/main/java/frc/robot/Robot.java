@@ -34,10 +34,6 @@ public class Robot extends TimedRobot {
     double angleToGoalRadians = 0;
     double limelightDistanceToTarget = 0;
 
-    private final SwerveRequest.RobotCentric request = new SwerveRequest.RobotCentric();
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
-
 
     public Robot() {
         m_robotContainer = new RobotContainer();
