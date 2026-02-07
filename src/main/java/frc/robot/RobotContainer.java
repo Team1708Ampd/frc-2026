@@ -43,6 +43,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
+
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -60,7 +63,9 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    
 
+    
 // AUTO RELATED VARIABLES AND DEFS
     private SendableChooser<Command> autoChooser;
 
@@ -80,7 +85,7 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(getAutonomousCommand());
         drivetrain.swerveDriveDashboard();
     }
-
+        
 
 
     private void configureBindings() {

@@ -344,7 +344,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         this // Reference to this subsystem to set requirements
             );
         }
-    }
+    
     
     public void swerveDriveDashboard() {
         SmartDashboard.putData("Swerve Drive", new Sendable() {
