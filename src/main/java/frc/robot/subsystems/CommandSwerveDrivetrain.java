@@ -16,10 +16,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -299,5 +302,29 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Override
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
+    }
+
+    public void swerveDriveDashboard() {
+        SmartDashboard.putData("Swerve Drive", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder) {
+                builder.setSmartDashboardType("SwerveDrive");
+
+                // We use getModule(id) to access the modules since the array itself is private
+                builder.addDoubleProperty("Front Left Angle", () -> getModule(0).getPosition(true).angle.getRadians(), null);
+                builder.addDoubleProperty("Front Left Velocity", () -> getModule(0).getCurrentState().speedMetersPerSecond, null);
+
+                builder.addDoubleProperty("Front Right Angle", () -> getModule(1).getPosition(true).angle.getRadians(), null);
+                builder.addDoubleProperty("Front Right Velocity", () -> getModule(1).getCurrentState().speedMetersPerSecond, null);
+
+                builder.addDoubleProperty("Back Left Angle", () -> getModule(2).getPosition(true).angle.getRadians(), null);
+                builder.addDoubleProperty("Back Left Velocity", () -> getModule(2).getCurrentState().speedMetersPerSecond, null);
+
+                builder.addDoubleProperty("Back Right Angle", () -> getModule(3).getPosition(true).angle.getRadians(), null);
+                builder.addDoubleProperty("Back Right Velocity", () -> getModule(3).getCurrentState().speedMetersPerSecond, null);
+
+                builder.addDoubleProperty("Robot Angle", () -> getState().Pose.getRotation().getRadians(), null);
+            }
+        });
     }
 }
