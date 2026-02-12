@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Far Left to Depot to Center"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pauseShoot"
+            "pathName": "AL to Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center to NZ"
+            "pathName": "Depot LineUp to Depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot to Hub"
           }
         }
       ]
