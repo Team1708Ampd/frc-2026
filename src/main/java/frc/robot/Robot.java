@@ -14,7 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ClimberSub;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IntakeSub;
+import frc.robot.subsystems.ShooterSub;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -37,8 +40,15 @@ public class Robot extends TimedRobot {
     double angleToGoalRadians = 0;
     double limelightDistanceToTarget = 0;
 
+    public static ShooterSub shooterSub;
+    public static IntakeSub intakeSub;
+    public static ClimberSub climberSub;
+
 
     public Robot() {
+        shooterSub = new ShooterSub();
+        intakeSub = new IntakeSub();
+        climberSub = new ClimberSub();
         m_robotContainer = new RobotContainer();
     }
 
