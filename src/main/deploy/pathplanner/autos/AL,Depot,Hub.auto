@@ -13,12 +13,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot LineUp to Depot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Depot to Hub"
           }
         }
