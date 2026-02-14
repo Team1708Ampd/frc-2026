@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AL to Depot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot to Hub"
+            "pathName": "AL to NZ"
           }
         }
       ]
