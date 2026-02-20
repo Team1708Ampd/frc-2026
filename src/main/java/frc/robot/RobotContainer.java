@@ -37,6 +37,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveToDistance;
+import frc.robot.commands.Intake;
+import frc.robot.commands.IntakeWristIn;
+import frc.robot.commands.IntakeWristOut;
+import frc.robot.commands.ManualShoot;
+import frc.robot.commands.Outtake;
+import frc.robot.commands.HopperIn;
+import frc.robot.commands.HopperOut;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShooterSub;
@@ -104,6 +111,16 @@ public class RobotContainer {
         );
 
         joystick.a().onTrue(new DriveToDistance(drivetrain, 75));
+
+        joystick.b().whileTrue(new ManualShoot());
+
+        joystick.x().whileTrue(new Intake());
+        joystick.y().whileTrue(new Outtake());
+        joystick.leftBumper().whileTrue(new HopperIn());
+        joystick.rightBumper().whileTrue(new HopperOut());
+        joystick.povDown().whileTrue(new IntakeWristOut());
+        joystick.povUp().whileTrue(new IntakeWristIn());
+
 
         // joystick.leftTrigger().whileTrue(new ManualShoot());
         // joystick.b().toggleOnTrue(new ShootAtDistance());

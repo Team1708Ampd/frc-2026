@@ -14,7 +14,7 @@ public class ClimberSub extends SubsystemBase {
 
   /** Creates a new ClimberSub. */
   public ClimberSub() {
-    climbMotor = new TalonFX(13);
+    climbMotor = new TalonFX(9);
   }
 
   @Override

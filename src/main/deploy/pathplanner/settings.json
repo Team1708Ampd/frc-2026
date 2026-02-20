@@ -1,10 +1,10 @@
 {
   "robotWidth": 0.686,
-  "robotLength": 0.6477,
+  "robotLength": 0.648,
   "holonomicMode": true,
   "pathFolders": [],
   "autoFolders": [
-    "New Folder"
+    "Invaild Auto (TESTING ONLY)"
   ],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 2.0,
@@ -12,10 +12,10 @@
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
   "robotMass": 24.494,
-  "robotMOI": 1.81630548028,
+  "robotMOI": 1.816,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.035,
-  "driveGearing": 5.357142857142857,
+  "driveGearing": 5.357,
   "maxDriveSpeed": 5.733,
   "driveMotorType": "krakenX60",
   "driveCurrentLimit": 60.0,
