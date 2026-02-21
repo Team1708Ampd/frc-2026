@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.Servo;
@@ -47,6 +48,12 @@ public class ShooterSub extends SubsystemBase {
     leftShooter.getConfigurator().apply(config);
     middleShooter.getConfigurator().apply(config);
     rightShooter.getConfigurator().apply(config);
+
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    leftShooter.getConfigurator().apply(config);
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    rightShooter.getConfigurator().apply(config);
+    middleShooter.getConfigurator().apply(config);
 
     voltageRequest = new VoltageOut(0);
   }
