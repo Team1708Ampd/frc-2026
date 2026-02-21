@@ -93,11 +93,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        targetOffsetAngle_Vertical = limelight.getEntry("ty").getDouble(0);
-        double angleToGoalDegrees = constants.LIMELIGHT_ANGLE + targetOffsetAngle_Vertical;
-        double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-        double distanceFromLimelightToGoalInches = (constants.GOAL_HEIGHT - constants.LIMELIGHT_HEIGHT) / Math.tan(angleToGoalRadians);
-        System.out.println("DISTANCE: " + distanceFromLimelightToGoalInches);
+        // targetOffsetAngle_Vertical = limelight.getEntry("ty").getDouble(0);
+        // double angleToGoalDegrees = constants.LIMELIGHT_ANGLE + targetOffsetAngle_Vertical;
+        // double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+        // double distanceFromLimelightToGoalInches = (constants.LADDER_TAG_HEIGHT - constants.LIMELIGHT_HEIGHT) / Math.tan(angleToGoalRadians);
+        // System.out.println("DISTANCE: " + distanceFromLimelightToGoalInches);
     }
 
     @Override

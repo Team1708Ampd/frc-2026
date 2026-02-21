@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Far Left to Depot to Center"
+            "pathName": "Ladder Test"
           }
         },
         {
@@ -17,9 +17,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "DriveToLadder"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ReturnToPath"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Center to NZ"
+            "pathName": "turnaround"
           }
         }
       ]

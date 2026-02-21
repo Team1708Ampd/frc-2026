@@ -14,6 +14,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Invaild Auto (TESTING ONLY)",
+  "folder": null,
   "choreoAuto": false
 }

@@ -33,9 +33,9 @@ public class ShooterSub extends SubsystemBase {
     private final double kC = 3.5;
 
   public ShooterSub() {
-    leftShooter = new TalonFX(8);
-    middleShooter = new TalonFX(9);
-    rightShooter = new TalonFX(10);
+    leftShooter = new TalonFX(11);
+    middleShooter = new TalonFX(14);
+    rightShooter = new TalonFX(15);
 
     // leftServo = new Servo(0);
     // rightServo = new Servo(1);

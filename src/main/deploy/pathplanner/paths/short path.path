@@ -32,12 +32,6 @@
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
-    {
-      "name": "pauseShoot",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
   ],
   "globalConstraints": {
     "maxVelocity": 1.0,

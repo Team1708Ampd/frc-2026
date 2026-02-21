@@ -6,6 +6,12 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import org.json.simple.parser.ParseException;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -14,12 +20,17 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.util.FileVersionException;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,6 +38,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -36,7 +48,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.CalibrateActuator;
 import frc.robot.commands.DriveToDistance;
+import frc.robot.commands.FeedShooter;
+import frc.robot.commands.Intake;
+import frc.robot.commands.ManualShoot;
+import frc.robot.commands.Outtake;
+import frc.robot.commands.OuttakeFromShooter;
+import frc.robot.commands.ShootAtDistance;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShooterSub;
@@ -68,6 +87,8 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final ShooterSub shooterSub = new ShooterSub();
+
+    private final AprilTagFieldLayout m_fieldLayout;
     
 // AUTO RELATED VARIABLES AND DEFS
     private SendableChooser<Command> autoChooser;
@@ -75,10 +96,10 @@ public class RobotContainer {
     public RobotContainer() {
         configureBindings();
 
-        registerNamedCommands();
-        initAuto();
-
         drivetrain.initPathPlannerConfig();
+        registerNamedCommands();
+
+
         autoChooser = AutoBuilder.buildAutoChooser("testing"); // Default auto will be `Commands.none()`
         CommandScheduler.getInstance().schedule(getAutonomousCommand());
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -87,8 +108,10 @@ public class RobotContainer {
         // Schedule the selected auto
         CommandScheduler.getInstance().schedule(getAutonomousCommand());
         drivetrain.swerveDriveDashboard();
+
+        m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    
     }
-        
 
 
     private void configureBindings() {
@@ -103,13 +126,21 @@ public class RobotContainer {
             )
         );
 
-        joystick.a().onTrue(new DriveToDistance(drivetrain, 75));
+        joystick.a().whileTrue(new ManualShoot());
+        joystick.x().whileTrue(new Intake());
+        joystick.y().whileTrue(new Outtake());
+        joystick.leftBumper().whileTrue(new FeedShooter());
+        joystick.rightBumper().whileTrue(new OuttakeFromShooter());
 
         // joystick.leftTrigger().whileTrue(new ManualShoot());
         // joystick.b().toggleOnTrue(new ShootAtDistance());
 
         // mech.start().whileTrue(new CalibrateActuator(shooterSub.getLeftServo(), shooterSub.getRightServo(), mech));
+        
 
+        // joystick.x().onTrue(
+        //     new DeferredCommand(() -> driveForwardOneMeter(), Set.of(drivetrain))
+        // );
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -121,21 +152,6 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
-
-     public void initAuto()
-    {
-        registerNamedCommands();
-        // Initialize PathPlanner config 
-        drivetrain.initPathPlannerConfig();
-
-        // Build the auto chooser so that auto routine can be selected 
-        // from the dashboard 
-        autoChooser = AutoBuilder.buildAutoChooser();
-
-        // Register named commands to be referenced in auto 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-    }
-
         public Command getAutonomousCommand()
     {
         return autoChooser.getSelected();
@@ -144,7 +160,68 @@ public class RobotContainer {
 
      private void registerNamedCommands() //Update with Command Names
     {
-        
+        NamedCommands.registerCommand("DriveToLadder", driveForwardOneMeter());
+        try {
+            NamedCommands.registerCommand("ReturnToPath", pathfindToNextPath("LadderToGoal"));
+        } catch (FileVersionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+
+    public Command driveForwardOneMeter() {
+        return Commands.defer(() -> {
+            // 1. Setup Constants
+            final double lensHeightInches = 27.0;
+            final double tagHeightInches = 21.75;
+            final double mountAngleDegrees = 8.1798331;
+            final double targetDistanceInches = 75.0;
+
+            // 2. Check for Target
+            if (!LimelightHelpers.getTV("limelight") || LimelightHelpers.getFiducialID("limelight") != 15) {
+                return Commands.none();
+            }
+
+            // 3. Trig Calculation
+            double ty = LimelightHelpers.getTY("limelight");
+            double tx = LimelightHelpers.getTX("limelight");
+            double angleToGoalRadians = Math.toRadians(mountAngleDegrees + ty);
+            double currentDistanceInches = (tagHeightInches - lensHeightInches) / Math.tan(angleToGoalRadians);
+
+            // 4. Transform Calculation (Inches to Meters)
+            double distanceToMoveMeters = (currentDistanceInches - targetDistanceInches) * 0.0254;
+
+            Pose2d currentPose = drivetrain.getState().Pose;
+            Pose2d targetPose = currentPose.transformBy(
+                new Transform2d(new Translation2d(distanceToMoveMeters, 0.0), Rotation2d.fromDegrees(-tx))
+            );
+
+            // 5. Build Path
+            PathPlannerPath path = new PathPlannerPath(
+                PathPlannerPath.waypointsFromPoses(currentPose, targetPose),
+                new PathConstraints(1.5, 1.5, Math.PI, 2 * Math.PI),
+                new IdealStartingState(0.0, currentPose.getRotation()),
+                new GoalEndState(0.0, targetPose.getRotation())
+            );
+
+            path.preventFlipping = true;
+            return AutoBuilder.followPath(path);
+        }, Set.of(drivetrain));
+    }
+ 
+    public Command pathfindToNextPath(String nextPathName) throws FileVersionException, IOException, ParseException {
+    // This creates a command that pathfinds to the start of a path file 
+    // and then follows it seamlessly.
+     return AutoBuilder.pathfindThenFollowPath(
+            PathPlannerPath.fromPathFile(nextPathName),
+            new PathConstraints(3.0, 3.0, Math.PI, 2 * Math.PI)
+        ); 
     }
 }
-

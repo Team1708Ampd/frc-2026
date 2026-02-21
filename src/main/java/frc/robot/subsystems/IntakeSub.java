@@ -13,15 +13,18 @@ public class IntakeSub extends SubsystemBase {
   
   TalonFX intakeMotor;
   TalonFX hopperMotor;
+  TalonFX feederMotor;
 
   public IntakeSub() {
     intakeMotor = new TalonFX(11);
     hopperMotor = new TalonFX(12);
+    feederMotor = new TalonFX(13);
   }
 
-  public void setBothIntakes(double power) {
-    intakeMotor.set(power);
+  public void setAllIntakes(double power) {
+    intakeMotor.set(-power);
     hopperMotor.set(power);
+    feederMotor.set(power);
   }
 
   public void setIntakePower(double power) {
@@ -30,6 +33,10 @@ public class IntakeSub extends SubsystemBase {
 
   public void setHopperPower(double power) {
     hopperMotor.set(power);
+  }
+
+  public void setFeederPower(double power) {
+    feederMotor.set(power);
   }
 
   @Override
