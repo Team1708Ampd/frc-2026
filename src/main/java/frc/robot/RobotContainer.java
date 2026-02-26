@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -52,6 +53,8 @@ import frc.robot.commands.CalibrateActuator;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.FeedShooter;
 import frc.robot.commands.Intake;
+import frc.robot.commands.IntakeWristIn;
+import frc.robot.commands.IntakeWristOut;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.OuttakeFromShooter;
@@ -67,13 +70,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 
-
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -89,6 +91,8 @@ public class RobotContainer {
     public final ShooterSub shooterSub = new ShooterSub();
 
     private final AprilTagFieldLayout m_fieldLayout;
+
+    private double shootPower = 4000;
     
 // AUTO RELATED VARIABLES AND DEFS
     private SendableChooser<Command> autoChooser;
@@ -117,20 +121,26 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        drivetrain.setDefaultCommand(
+        // drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            )
-        );
+            // drivetrain.applyRequest(() ->
+                // drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    // .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    // .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            // )
+        // );
 
-        joystick.a().whileTrue(new ManualShoot());
+        joystick.a().whileTrue(new ManualShoot(() -> shootPower));
         joystick.x().whileTrue(new Intake());
         joystick.y().whileTrue(new Outtake());
         joystick.leftBumper().whileTrue(new FeedShooter());
         joystick.rightBumper().whileTrue(new OuttakeFromShooter());
+
+        joystick.povUp().onTrue(Commands.runOnce(() -> incrementShoot()));
+        joystick.povDown().onTrue(Commands.runOnce(() -> decrementShoot()));
+
+        // joystick.povUp().whileTrue(new IntakeWristIn());
+        // joystick.povDown().whileTrue(new IntakeWristOut());
 
         // joystick.leftTrigger().whileTrue(new ManualShoot());
         // joystick.b().toggleOnTrue(new ShootAtDistance());
@@ -223,5 +233,15 @@ public class RobotContainer {
             PathPlannerPath.fromPathFile(nextPathName),
             new PathConstraints(3.0, 3.0, Math.PI, 2 * Math.PI)
         ); 
+    }
+
+    public void incrementShoot() {
+        shootPower += 50;
+        System.out.println("INCREMENTED: " + shootPower);
+    }
+
+    public void decrementShoot() {
+        shootPower -= 50;
+        System.out.println("DECREMENTED: " + shootPower);
     }
 }

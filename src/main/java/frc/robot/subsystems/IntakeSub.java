@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
@@ -22,10 +23,19 @@ public class IntakeSub extends SubsystemBase {
     hopperMotor = new TalonFX(13);
     feederMotor = new TalonFX(8);
     wristMotor = new TalonFX(10);
+    
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Voltage.PeakForwardVoltage = 10.0;
+    config.Voltage.PeakReverseVoltage = -10.0;
+
+    intakeMotor.getConfigurator().apply(config);
+    hopperMotor.getConfigurator().apply(config);
+    feederMotor.getConfigurator().apply(config);
+    wristMotor.getConfigurator().apply(config);
   }
 
   public void setAllIntakes(double power) {
-    intakeMotor.set(-power);
+    intakeMotor.set(power);
     hopperMotor.set(power);
     feederMotor.set(power);
   }
@@ -40,6 +50,15 @@ public class IntakeSub extends SubsystemBase {
 
   public void setFeederPower(double power) {
     feederMotor.set(power);
+    hopperMotor.set(power);
+  }
+
+  public void setFeederOnly(double power) {
+    feederMotor.set(power);
+  }
+
+  public void setWristPower(double power) {
+    wristMotor.set(power);
   }
 
   @Override

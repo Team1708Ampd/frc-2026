@@ -22,13 +22,13 @@ public class ShootAtDistance extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.shooterSub.setShooterVoltageByRegression(50);
+    // Robot.shooterSub.setShooterVoltageByRegression(50);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Robot.shooterSub.setAllShooters(0);
+    // Robot.shooterSub.setAllShooters(0);
   }
 
   // Returns true when the command should end.

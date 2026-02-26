@@ -10,7 +10,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 public class ShooterSub extends SubsystemBase {
@@ -24,8 +30,7 @@ public class ShooterSub extends SubsystemBase {
   Servo rightServo;
 
   TalonFXConfiguration config;
-  VoltageOut voltageRequest;
-
+  private final VelocityVoltage m_velocityRequest;
 /* * QUADRATIC CONSTANTS (Inches Version)
      * Values are placeholders. Note: kA will likely be a very small decimal.
      */
@@ -44,51 +49,51 @@ public class ShooterSub extends SubsystemBase {
     config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 40; // Limit to 40 Amps
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    config.Slot0.kV = 0.115;
+    config.Slot0.kP = 0.2;
+
+    config.Voltage.PeakForwardVoltage = 10.0;
+    config.Voltage.PeakReverseVoltage = -10.0;
+
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     leftShooter.getConfigurator().apply(config);
     middleShooter.getConfigurator().apply(config);
-    rightShooter.getConfigurator().apply(config);
 
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    leftShooter.getConfigurator().apply(config);
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     rightShooter.getConfigurator().apply(config);
-    middleShooter.getConfigurator().apply(config);
 
-    voltageRequest = new VoltageOut(0);
+    m_velocityRequest = new VelocityVoltage(0);
   }
 
-  public void setAllShooters(double voltage) {
-    leftShooter.setControl(voltageRequest.withOutput(voltage));    
-    middleShooter.setControl(voltageRequest.withOutput(voltage));
-    rightShooter.setControl(voltageRequest.withOutput(voltage));
+  public void runShooter(DoubleSupplier rpm) {
+    leftShooter.setControl(m_velocityRequest.withVelocity(rpm.getAsDouble() / 60));
+    middleShooter.setControl(m_velocityRequest.withVelocity(rpm.getAsDouble() / 60));
+    rightShooter.setControl(m_velocityRequest.withVelocity(rpm.getAsDouble() / 60));
   }
 
-  public void setShooterVoltageByRegression(double distanceInches) {
-        // V = ax^2 + bx + c
-        double targetVoltage = (kA * Math.pow(distanceInches, 2)) 
-                             + (kB * distanceInches) 
-                             + kC;
+  public boolean isShooterReady(DoubleSupplier targetRPM) {
+    double currentLeft = leftShooter.getVelocity().getValueAsDouble();
+    double currentMiddle = middleShooter.getVelocity().getValueAsDouble();
+    double currentRight = rightShooter.getVelocity().getValueAsDouble();
 
-        // Clamp between 0V and 12V for safety
-        targetVoltage = Math.max(0.0, Math.min(targetVoltage, 12.0));
+    double leftError = Math.abs(currentLeft - (targetRPM.getAsDouble() / 60));
+    double middleError = Math.abs(currentMiddle - (targetRPM.getAsDouble() / 60));
+    double rightError = Math.abs(currentRight - (targetRPM.getAsDouble() / 60));
 
-        leftShooter.setControl(voltageRequest.withOutput(targetVoltage));
-        middleShooter.setControl(voltageRequest.withOutput(targetVoltage));
-        rightShooter.setControl(voltageRequest.withOutput(targetVoltage));
+    System.out.print("LEFT ERROR: " + leftError + ", CURRENT: " + currentLeft);
 
+    
+    // Only allow feeding if the shooter is within 2 rotations per second of target
+    return (middleError < 3.0) &&
+      (leftError < 3.0) &&
+      (rightError < 3.0); 
+}
 
-        SmartDashboard.putNumber("Shooter/Target Voltage", targetVoltage);
-        SmartDashboard.putNumber("Shooter/Distance Inches", distanceInches);
-    }
+  public void setTargetVelocity() {
 
-    public Servo getLeftServo() {
-      return leftServo;
-    }
-
-    public Servo getRightServo() {
-      return rightServo;
-    }
+  }
 
   @Override
   public void periodic() {

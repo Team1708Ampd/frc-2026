@@ -23,7 +23,7 @@ public class OuttakeFromShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.intakeSub.setFeederPower(-1);
+    Robot.intakeSub.setFeederPower(-0.75);
   }
 
   // Called once the command ends or is interrupted.

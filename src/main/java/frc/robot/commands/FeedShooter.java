@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 
@@ -24,7 +25,12 @@ public class FeedShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.intakeSub.setAllIntakes(1);
+    Robot.intakeSub.setAllIntakes(0.75);
+    Timer.delay(0.25);
+    Robot.intakeSub.setIntakePower(0);
+    Robot.intakeSub.setHopperPower(0);
+    Robot.intakeSub.setFeederOnly(-0.4);
+    Timer.delay(0.15);
   }
 
   // Called once the command ends or is interrupted.

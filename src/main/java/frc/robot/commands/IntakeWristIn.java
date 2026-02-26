@@ -22,15 +22,14 @@ public class IntakeWristIn extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        Robot.intakeSub.setIntakeWristPower(-.25);
-
+        Robot.intakeSub.setWristPower(-.25);
   }
 
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-        Robot.intakeSub.setIntakeWristPower(0);
+        Robot.intakeSub.setWristPower(0);
   }
 
   // Returns true when the command should end.
