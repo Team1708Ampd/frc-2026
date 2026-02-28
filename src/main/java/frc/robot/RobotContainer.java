@@ -131,7 +131,7 @@ public class RobotContainer {
 
         Command shootCommand = Commands.sequence(
            new ManualShoot(() -> 4000).until(() -> Robot.shooterSub.isShooterJammed()),
-           new OuttakeFromShooter().withTimeout(1)
+           new OuttakeFromShooter().withTimeout(0.5)
         ).repeatedly();
         
         joystick.a().whileTrue(shootCommand);
