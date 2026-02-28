@@ -12,7 +12,7 @@ public class OuttakeFromShooter extends Command {
   /** Creates a new OuttakeFromShooter. */
   public OuttakeFromShooter() {
     addRequirements(Robot.intakeSub);
-  
+    addRequirements(Robot.shooterSub);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -24,12 +24,14 @@ public class OuttakeFromShooter extends Command {
   @Override
   public void execute() {
     Robot.intakeSub.setFeederPower(-0.75);
+    Robot.shooterSub.runShooter(() -> -3000);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     Robot.intakeSub.setFeederPower(0);
+    Robot.shooterSub.runShooter(() -> 0);
   }
 
   // Returns true when the command should end.

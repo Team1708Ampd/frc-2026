@@ -49,6 +49,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.CalibrateActuator;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.FeedShooter;
@@ -58,6 +59,7 @@ import frc.robot.commands.IntakeWristOut;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.OuttakeFromShooter;
+import frc.robot.commands.SetActuators;
 import frc.robot.commands.ShootAtDistance;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -87,8 +89,6 @@ public class RobotContainer {
     private final CommandXboxController mech = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
-    public final ShooterSub shooterSub = new ShooterSub();
 
     private final AprilTagFieldLayout m_fieldLayout;
 
@@ -121,26 +121,36 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        // drivetrain.setDefaultCommand(
+        drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
-            // drivetrain.applyRequest(() ->
-                // drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    // .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    // .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            // )
-        // );
+            drivetrain.applyRequest(() ->
+                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.7) // Drive forward with negative Y (forward)
+                    .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.7) // Drive left with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.85) // Drive counterclockwise with negative X (left)
+        ));
 
-        joystick.a().whileTrue(new ManualShoot(() -> shootPower));
-        joystick.x().whileTrue(new Intake());
-        joystick.y().whileTrue(new Outtake());
-        joystick.leftBumper().whileTrue(new FeedShooter());
+        Command shootCommand = Commands.sequence(
+           new ManualShoot(() -> 4000).until(() -> Robot.shooterSub.isShooterJammed()),
+           new OuttakeFromShooter().withTimeout(1)
+        ).repeatedly();
+        
+        joystick.a().whileTrue(shootCommand);
+
+        joystick.b().onTrue(new AlignToGoal(drivetrain).withTimeout(5));
+
+        joystick.rightTrigger().whileTrue(new Intake());
+        joystick.leftTrigger().whileTrue(new Outtake());
+        // joystick.leftBumper().whileTrue(new FeedShooter());
         joystick.rightBumper().whileTrue(new OuttakeFromShooter());
 
-        joystick.povUp().onTrue(Commands.runOnce(() -> incrementShoot()));
-        joystick.povDown().onTrue(Commands.runOnce(() -> decrementShoot()));
+        joystick.start().onTrue(new SetActuators(() -> 0.2));
+        joystick.back().onTrue(new SetActuators(() -> 0.3));
 
-        // joystick.povUp().whileTrue(new IntakeWristIn());
-        // joystick.povDown().whileTrue(new IntakeWristOut());
+        // joystick.povUp().onTrue(Commands.runOnce(() -> incrementShoot()));
+        // joystick.povDown().onTrue(Commands.runOnce(() -> decrementShoot()));
+
+        joystick.povUp().whileTrue(new IntakeWristIn());
+        joystick.povDown().whileTrue(new IntakeWristOut());
 
         // joystick.leftTrigger().whileTrue(new ManualShoot());
         // joystick.b().toggleOnTrue(new ShootAtDistance());

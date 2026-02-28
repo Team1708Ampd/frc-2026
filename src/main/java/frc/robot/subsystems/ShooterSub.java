@@ -43,8 +43,10 @@ public class ShooterSub extends SubsystemBase {
     middleShooter = new TalonFX(14);
     rightShooter = new TalonFX(15);
 
-    // leftServo = new Servo(0);
-    // rightServo = new Servo(1);
+    leftServo = new Servo(0);
+    leftServo.setBoundsMicroseconds(2000, 1501, 1500, 1499, 1000);
+    rightServo = new Servo(1);
+    rightServo.setBoundsMicroseconds(2000, 1501, 1500, 1499, 1000);
 
     config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 40; // Limit to 40 Amps
@@ -93,6 +95,26 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetVelocity() {
 
+  }
+
+  public void setHoodPos(double pos) {
+    leftServo.setPosition(pos);
+    rightServo.setPosition(pos);
+  }
+
+  public boolean isShooterJammed() {
+    double leftCurrent = leftShooter.getStatorCurrent().getValueAsDouble();
+    double leftVelocity = leftShooter.getVelocity().getValueAsDouble();
+
+    double middleCurrent = middleShooter.getStatorCurrent().getValueAsDouble();
+    double middleVelocity = middleShooter.getVelocity().getValueAsDouble();
+
+    double rightCurrent = rightShooter.getStatorCurrent().getValueAsDouble();
+    double rightVelocity = rightShooter.getVelocity().getValueAsDouble();
+
+    return (Math.abs(leftVelocity) < 1 && leftCurrent > 40) ||
+           (Math.abs(middleVelocity) < 1 && middleCurrent > 40) ||
+           (Math.abs(rightVelocity) < 1 && rightCurrent > 40);
   }
 
   @Override
