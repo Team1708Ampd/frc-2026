@@ -10,12 +10,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberSub extends SubsystemBase {
 
-  TalonFX climbMotor;
+  TalonFX rearClimber;
 
   /** Creates a new ClimberSub. */
   public ClimberSub() {
-    climbMotor = new TalonFX(9);
+    rearClimber = new TalonFX(20);
   }
+
+  public void ClimberUp(double power){
+    rearClimber.set(power);
+  }
+
+  public void ClimberDown(double power){
+    rearClimber.set(-power);
+  }
+
+
 
   @Override
   public void periodic() {

@@ -4,18 +4,12 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Set;
-
-import org.json.simple.parser.ParseException;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -51,13 +45,18 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.CalibrateActuator;
+import frc.robot.commands.ClimberExtend;
+import frc.robot.commands.ClimberRetract;
 import frc.robot.commands.DriveToDistance;
+import frc.robot.commands.HopperIn;
+import frc.robot.commands.HopperOut;
 import frc.robot.commands.FeedShooter;
 import frc.robot.commands.Intake;
 import frc.robot.commands.IntakeWristIn;
 import frc.robot.commands.IntakeWristOut;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.Outtake;
+import frc.robot.commands.TestLnPrint;
 import frc.robot.commands.OuttakeFromShooter;
 import frc.robot.commands.SetActuators;
 import frc.robot.commands.ShootAtDistance;
@@ -151,9 +150,12 @@ public class RobotContainer {
 
         joystick.povUp().whileTrue(new IntakeWristIn());
         joystick.povDown().whileTrue(new IntakeWristOut());
+        joystick.povUp().whileTrue(new IntakeWristIn());
+        joystick.povLeft().whileTrue(new ClimberRetract());
+        joystick.povRight().whileTrue(new ClimberExtend());
 
-        // joystick.leftTrigger().whileTrue(new ManualShoot());
-        // joystick.b().toggleOnTrue(new ShootAtDistance());
+        joystick.leftTrigger().whileTrue(new ManualShoot());
+        //joystick.b().toggleOnTrue(new ShootAtDistance());
 
         // mech.start().whileTrue(new CalibrateActuator(shooterSub.getLeftServo(), shooterSub.getRightServo(), mech));
         
@@ -180,6 +182,25 @@ public class RobotContainer {
 
      private void registerNamedCommands() //Update with Command Names
     {
+        NamedCommands.registerCommand("ManualShoot", new ManualShoot());
+        NamedCommands.registerCommand("Intake", new Intake());
+        NamedCommands.registerCommand("Outtake", new Outtake());
+        NamedCommands.registerCommand("HopperIn", new HopperIn());
+        NamedCommands.registerCommand("HopperOut", new HopperOut());
+        NamedCommands.registerCommand("IntakeWristOut", new IntakeWristOut());
+        NamedCommands.registerCommand("IntakeWristIn", new IntakeWristIn());
+        NamedCommands.registerCommand("TestLnPrint", new TestLnPrint());
+        NamedCommands.registerCommand("ClimberExtend", new ClimberExtend());
+        NamedCommands.registerCommand("ClimberRetract", new ClimberRetract());
+
+
+
+
+        
+    }
+
+
+
         NamedCommands.registerCommand("DriveToLadder", driveForwardOneMeter());
         try {
             NamedCommands.registerCommand("ReturnToPath", pathfindToNextPath("LadderToGoal"));
