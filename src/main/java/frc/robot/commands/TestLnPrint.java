@@ -5,14 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Robot;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class IntakeWristIn extends Command {
-  /** Creates a new IntakeWristIn. */
-  public IntakeWristIn() {
+public class TestLnPrint extends Command {
+  /** Creates a new TestLnPrint. */
+  public TestLnPrint() {
     // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(Robot.intakeSub);
   }
 
   // Called when the command is initially scheduled.
@@ -22,15 +20,13 @@ public class IntakeWristIn extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        Robot.intakeSub.setWristPower(-.25);
+    System.out.println("What's a robot's favorite kind of music? Heavy metal.");
+    //a command would execute right now. 
   }
-
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-        Robot.intakeSub.setWristPower(0);}
-  
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

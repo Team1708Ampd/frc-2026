@@ -154,7 +154,7 @@ public class RobotContainer {
         joystick.povLeft().whileTrue(new ClimberRetract());
         joystick.povRight().whileTrue(new ClimberExtend());
 
-        joystick.leftTrigger().whileTrue(new ManualShoot());
+        //Sjoystick.leftTrigger().whileTrue(new ManualShoot());
         //joystick.b().toggleOnTrue(new ShootAtDistance());
 
         // mech.start().whileTrue(new CalibrateActuator(shooterSub.getLeftServo(), shooterSub.getRightServo(), mech));
@@ -182,7 +182,7 @@ public class RobotContainer {
 
      private void registerNamedCommands() //Update with Command Names
     {
-        NamedCommands.registerCommand("ManualShoot", new ManualShoot());
+        //NamedCommands.registerCommand("ManualShoot", new ManualShoot());
         NamedCommands.registerCommand("Intake", new Intake());
         NamedCommands.registerCommand("Outtake", new Outtake());
         NamedCommands.registerCommand("HopperIn", new HopperIn());
@@ -201,70 +201,70 @@ public class RobotContainer {
 
 
 
-        NamedCommands.registerCommand("DriveToLadder", driveForwardOneMeter());
-        try {
-            NamedCommands.registerCommand("ReturnToPath", pathfindToNextPath("LadderToGoal"));
-        } catch (FileVersionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+        // NamedCommands.registerCommand("DriveToLadder", driveForwardOneMeter());
+        // try {
+        //     NamedCommands.registerCommand("ReturnToPath", pathfindToNextPath("LadderToGoal"));
+        // } catch (FileVersionException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // } catch (IOException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // } catch (ParseException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
+    //}
 
 
-    public Command driveForwardOneMeter() {
-        return Commands.defer(() -> {
-            // 1. Setup Constants
-            final double lensHeightInches = 27.0;
-            final double tagHeightInches = 21.75;
-            final double mountAngleDegrees = 8.1798331;
-            final double targetDistanceInches = 75.0;
+    // public Command driveForwardOneMeter() {
+    //     return Commands.defer(() -> {
+    //         // 1. Setup Constants
+    //         final double lensHeightInches = 27.0;
+    //         final double tagHeightInches = 21.75;
+    //         final double mountAngleDegrees = 8.1798331;
+    //         final double targetDistanceInches = 75.0;
 
-            // 2. Check for Target
-            if (!LimelightHelpers.getTV("limelight") || LimelightHelpers.getFiducialID("limelight") != 15) {
-                return Commands.none();
-            }
+    //         // 2. Check for Target
+    //         if (!LimelightHelpers.getTV("limelight") || LimelightHelpers.getFiducialID("limelight") != 15) {
+    //             return Commands.none();
+    //         }
 
-            // 3. Trig Calculation
-            double ty = LimelightHelpers.getTY("limelight");
-            double tx = LimelightHelpers.getTX("limelight");
-            double angleToGoalRadians = Math.toRadians(mountAngleDegrees + ty);
-            double currentDistanceInches = (tagHeightInches - lensHeightInches) / Math.tan(angleToGoalRadians);
+    //         // 3. Trig Calculation
+    //         double ty = LimelightHelpers.getTY("limelight");
+    //         double tx = LimelightHelpers.getTX("limelight");
+    //         double angleToGoalRadians = Math.toRadians(mountAngleDegrees + ty);
+    //         double currentDistanceInches = (tagHeightInches - lensHeightInches) / Math.tan(angleToGoalRadians);
 
-            // 4. Transform Calculation (Inches to Meters)
-            double distanceToMoveMeters = (currentDistanceInches - targetDistanceInches) * 0.0254;
+    //         // 4. Transform Calculation (Inches to Meters)
+    //         double distanceToMoveMeters = (currentDistanceInches - targetDistanceInches) * 0.0254;
 
-            Pose2d currentPose = drivetrain.getState().Pose;
-            Pose2d targetPose = currentPose.transformBy(
-                new Transform2d(new Translation2d(distanceToMoveMeters, 0.0), Rotation2d.fromDegrees(-tx))
-            );
+    //         Pose2d currentPose = drivetrain.getState().Pose;
+    //         Pose2d targetPose = currentPose.transformBy(
+    //             new Transform2d(new Translation2d(distanceToMoveMeters, 0.0), Rotation2d.fromDegrees(-tx))
+    //         );
 
-            // 5. Build Path
-            PathPlannerPath path = new PathPlannerPath(
-                PathPlannerPath.waypointsFromPoses(currentPose, targetPose),
-                new PathConstraints(1.5, 1.5, Math.PI, 2 * Math.PI),
-                new IdealStartingState(0.0, currentPose.getRotation()),
-                new GoalEndState(0.0, targetPose.getRotation())
-            );
+    //         // 5. Build Path
+    //         PathPlannerPath path = new PathPlannerPath(
+    //             PathPlannerPath.waypointsFromPoses(currentPose, targetPose),
+    //             new PathConstraints(1.5, 1.5, Math.PI, 2 * Math.PI),
+    //             new IdealStartingState(0.0, currentPose.getRotation()),
+    //             new GoalEndState(0.0, targetPose.getRotation())
+    //         );
 
-            path.preventFlipping = true;
-            return AutoBuilder.followPath(path);
-        }, Set.of(drivetrain));
-    }
+    //         path.preventFlipping = true;
+    //         return AutoBuilder.followPath(path);
+    //     }, //Set.of(drivetrain));
+    // }
  
-    public Command pathfindToNextPath(String nextPathName) throws FileVersionException, IOException, ParseException {
-    // This creates a command that pathfinds to the start of a path file 
-    // and then follows it seamlessly.
-     return AutoBuilder.pathfindThenFollowPath(
-            PathPlannerPath.fromPathFile(nextPathName),
-            new PathConstraints(3.0, 3.0, Math.PI, 2 * Math.PI)
-        ); 
-    }
+    // public Command pathfindToNextPath(String nextPathName) throws FileVersionException, IOException, ParseException {
+    // // This creates a command that pathfinds to the start of a path file 
+    // // and then follows it seamlessly.
+    //  return AutoBuilder.pathfindThenFollowPath(
+    //         PathPlannerPath.fromPathFile(nextPathName),
+    //         new PathConstraints(3.0, 3.0, Math.PI, 2 * Math.PI)
+    //     ); 
+    // }
 
     public void incrementShoot() {
         shootPower += 50;
