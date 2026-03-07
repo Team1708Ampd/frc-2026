@@ -10,19 +10,20 @@ import edu.wpi.first.units.measure.Power;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberSub extends SubsystemBase {
-
   TalonFX rearClimber;
 
   /** Creates a new ClimberSub. */
   public ClimberSub() {
-    rearClimber = new TalonFX(20);
+    rearClimber = new TalonFX(9);
   }
+
   public void ClimberUp(double power){
     rearClimber.set(power);
   }
   public void ClimberDown(double power){
     rearClimber.set(-power);
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
