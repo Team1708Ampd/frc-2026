@@ -34,6 +34,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,6 +52,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AlignToGoal;
+import frc.robot.commands.CalculatedShoot;
 import frc.robot.commands.CalibrateActuator;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.FeedShooter;
@@ -92,7 +95,7 @@ public class RobotContainer {
 
     private final AprilTagFieldLayout m_fieldLayout;
 
-    private double shootPower = 4000;
+    private double shootPower = 5000;
     
 // AUTO RELATED VARIABLES AND DEFS
     private SendableChooser<Command> autoChooser;
@@ -130,21 +133,26 @@ public class RobotContainer {
         ));
 
         Command shootCommand = Commands.sequence(
-           new ManualShoot(() -> 4000).until(() -> Robot.shooterSub.isShooterJammed()),
+           new ManualShoot(() -> shootPower).until(() -> Robot.shooterSub.isShooterJammed()),
+           new OuttakeFromShooter().withTimeout(0.5)
+        ).repeatedly();
+
+        Command calculatedShootCommand = Commands.sequence(
+           new CalculatedShoot().until(() -> Robot.shooterSub.isShooterJammed()),
            new OuttakeFromShooter().withTimeout(0.5)
         ).repeatedly();
         
         joystick.a().whileTrue(shootCommand);
 
-        joystick.b().onTrue(new AlignToGoal(drivetrain).withTimeout(5));
+        joystick.b().whileTrue(calculatedShootCommand);
 
         joystick.rightTrigger().whileTrue(new Intake());
         joystick.leftTrigger().whileTrue(new Outtake());
         // joystick.leftBumper().whileTrue(new FeedShooter());
         joystick.rightBumper().whileTrue(new OuttakeFromShooter());
 
-        joystick.start().onTrue(new SetActuators(() -> 0.2));
-        joystick.back().onTrue(new SetActuators(() -> 0.3));
+        // joystick.start().onTrue(new SetActuators(() -> 0.2));
+        // joystick.back().onTrue(new SetActuators(() -> 0.3));
 
         // joystick.povUp().onTrue(Commands.runOnce(() -> incrementShoot()));
         // joystick.povDown().onTrue(Commands.runOnce(() -> decrementShoot()));
