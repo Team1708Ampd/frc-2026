@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.29277108433734933,
-        "y": 6.821566265060242
+        "x": 0.413,
+        "y": 5.368
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2927710843373506,
-        "y": 6.821566265060242
+        "x": 0.5179450384425848,
+        "y": 4.373521976659974
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.980987951807229,
-        "y": 6.821566265060242
+        "x": 2.565734939759036,
+        "y": 3.9147951807228916
       },
       "prevControl": {
-        "x": 1.9809879518072289,
-        "y": 6.821566265060242
+        "x": 1.5657349397590359,
+        "y": 3.9147951807228916
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,17 +31,10 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "TestLnPrint",
-      "waypointRelativePos": 0.2667857142857134,
-      "endWaypointRelativePos": 0.6810714285714288,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -55,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

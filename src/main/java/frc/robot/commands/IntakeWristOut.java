@@ -4,8 +4,9 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+//import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -24,6 +25,7 @@ public class IntakeWristOut extends Command {
   @Override
   public void execute() {
     Robot.intakeSub.setWristPower(.5);
+    Timer.delay(.7);
     // try {
     //   Robot.intakeSub.wait(1000);
     // } catch (InterruptedException e) {
@@ -41,6 +43,6 @@ public class IntakeWristOut extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
