@@ -6,15 +6,22 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.units.measure.Power;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberSub extends SubsystemBase {
-
-  TalonFX climbMotor;
+  TalonFX rearClimber;
 
   /** Creates a new ClimberSub. */
   public ClimberSub() {
-    climbMotor = new TalonFX(9);
+    rearClimber = new TalonFX(9);
+  }
+
+  public void ClimberUp(double power){
+    rearClimber.set(power);
+  }
+  public void ClimberDown(double power){
+    rearClimber.set(-power);
   }
 
   @Override

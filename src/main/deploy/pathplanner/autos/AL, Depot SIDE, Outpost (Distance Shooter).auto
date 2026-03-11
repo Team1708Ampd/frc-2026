@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AL to Depot"
+                  "pathName": "AL to Depot SIDE"
                 }
               },
               {
@@ -26,7 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot to Hub"
+            "pathName": "Depot SIDE to Outpost"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
           }
         }
       ]
