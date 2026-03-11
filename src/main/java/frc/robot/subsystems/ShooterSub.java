@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,14 +50,9 @@ public class ShooterSub extends SubsystemBase {
     rightServo.setBoundsMicroseconds(2000, 1501, 1500, 1499, 1000);
 
     config = new TalonFXConfiguration();
-    config.CurrentLimits.SupplyCurrentLimit = 40; // Limit to 40 Amps
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     config.Slot0.kV = 0.115;
     config.Slot0.kP = 0.2;
-
-    config.Voltage.PeakForwardVoltage = 10.0;
-    config.Voltage.PeakReverseVoltage = -10.0;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -88,9 +84,9 @@ public class ShooterSub extends SubsystemBase {
 
     
     // Only allow feeding if the shooter is within 2 rotations per second of target
-    return (middleError < 3.0) &&
-      (leftError < 3.0) &&
-      (rightError < 3.0); 
+    return (middleError <= 5.0) &&
+      (leftError <= 5.0) &&
+      (rightError <= 5.0); 
 }
 
   public void setTargetVelocity() {
@@ -112,10 +108,36 @@ public class ShooterSub extends SubsystemBase {
     double rightCurrent = rightShooter.getStatorCurrent().getValueAsDouble();
     double rightVelocity = rightShooter.getVelocity().getValueAsDouble();
 
-    return (Math.abs(leftVelocity) < 1 && leftCurrent > 40) ||
-           (Math.abs(middleVelocity) < 1 && middleCurrent > 40) ||
-           (Math.abs(rightVelocity) < 1 && rightCurrent > 40);
+    return (Math.abs(leftVelocity) < 3 && leftCurrent > 40) ||
+           (Math.abs(middleVelocity) < 3 && middleCurrent > 40) ||
+           (Math.abs(rightVelocity) < 3 && rightCurrent > 40);
   }
+
+  double hoodDistanceOffset = 1;
+
+  public int getHoodPosition(double distance) {
+    if(distance < 57 + hoodDistanceOffset) {
+      return 2;
+    } else if (distance < 102.7 + hoodDistanceOffset) {
+      return 3;
+    } else {
+      return 4;
+    }
+}
+
+  public double calculateTargetRPS(double distance) {
+    int pos = getHoodPosition(distance); // Updates and returns the current state
+    double rps;
+    if (distance <= 57.0) {
+        rps = (0.18882 * distance) + 60.41405; // Pos 2
+    } else if (distance <= 102.7) {
+        rps = (0.21168 * distance) + 53.79669; // Pos 3
+    } else {
+        rps = (0.07534 * distance) + 63.20878; // Pos 4
+    }
+
+    return MathUtil.clamp(rps, 60.0, 100.0);
+}
 
   @Override
   public void periodic() {
