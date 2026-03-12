@@ -4,17 +4,13 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-//import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Robot;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class IntakeWristOut extends Command {
-  /** Creates a new IntakeWristOut. */
-  public IntakeWristOut() {
+public class TestLnPrint extends Command {
+  /** Creates a new TestLnPrint. */
+  public TestLnPrint() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(Robot.intakeSub);
   }
 
   // Called when the command is initially scheduled.
@@ -24,25 +20,17 @@ public class IntakeWristOut extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.intakeSub.setWristPower(.5);
-    Timer.delay(.7);
-    // try {
-    //   Robot.intakeSub.wait(1000);
-    // } catch (InterruptedException e) {
-    //   // TODO Auto-generated catch block
-    //   e.printStackTrace();
-    // }
+    System.out.println("What's a robot's favorite kind of music? Heavy metal.");
+    //a command would execute right now. 
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    Robot.intakeSub.setWristPower(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

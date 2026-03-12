@@ -29,8 +29,8 @@ public class IntakeWristIn extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-        Robot.intakeSub.setWristPower(0);
-  }
+        Robot.intakeSub.setWristPower(0);}
+  
 
   // Returns true when the command should end.
   @Override

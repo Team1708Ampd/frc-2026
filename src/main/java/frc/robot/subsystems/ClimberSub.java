@@ -6,19 +6,26 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.units.measure.Power;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ClimberSub extends SubsystemBase {
+// public class ClimberSub extends SubsystemBase {
+//   TalonFX rearClimber;
 
-  TalonFX climbMotor;
+//   /** Creates a new ClimberSub. */
+//   public ClimberSub() {
+//     rearClimber = new TalonFX(9);
+//   }
 
-  /** Creates a new ClimberSub. */
-  public ClimberSub() {
-    climbMotor = new TalonFX(9);
-  }
+//   public void ClimberUp(double power){
+//     rearClimber.set(power);
+//   }
+//   public void ClimberDown(double power){
+//     rearClimber.set(-power);
+//   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-}
+//   @Override
+//   public void periodic() {
+//     // This method will be called once per scheduler run
+//   }
+// }

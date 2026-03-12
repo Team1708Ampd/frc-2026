@@ -5,13 +5,25 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeWristOut"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AL to NZ"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AL to Depot"
+                  "pathName": "NZ Sweep (Top to Bottom)"
                 }
               },
               {
@@ -26,7 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot to Hub"
+            "pathName": "NZ Bottom Hub Swing"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": []
           }
         }
       ]
