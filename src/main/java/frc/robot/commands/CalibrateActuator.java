@@ -23,6 +23,6 @@ public class CalibrateActuator extends Command {
       else if (pov == 180) currentMicros -= 10;
       left.setPulseTimeMicroseconds(currentMicros);
       right.setPulseTimeMicroseconds(currentMicros);
-      System.out.println("Dual PWM: " + currentMicros + "us");
+      // System.out.println("Dual PWM: " + currentMicros + "us");
   }
 }

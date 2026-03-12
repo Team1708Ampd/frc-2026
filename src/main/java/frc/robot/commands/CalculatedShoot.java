@@ -31,7 +31,7 @@ public class CalculatedShoot extends Command {
 
     System.out.println("DISTANCE: " + distance);
     System.out.println("HOOD POSITION: " + hoodPos);
-    System.out.println("RPM: " + targetRPM); 
+    System.out.println("RPM: " + targetRPM.getAsDouble()); 
   }
 
   // Called every time the scheduler runs while the command is scheduled.

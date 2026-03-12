@@ -83,10 +83,10 @@ public class ShooterSub extends SubsystemBase {
     System.out.print("LEFT ERROR: " + leftError + ", CURRENT: " + currentLeft);
 
     
-    // Only allow feeding if the shooter is within 2 rotations per second of target
-    return (middleError <= 5.0) &&
-      (leftError <= 5.0) &&
-      (rightError <= 5.0); 
+    // Only allow feeding if the shooter is within 2 rotations per second of targethhj
+    return (middleError <= 4.0) &&
+      (leftError <= 4.0) &&
+      (rightError <= 4.0); 
 }
 
   public void setTargetVelocity() {
@@ -117,10 +117,13 @@ public class ShooterSub extends SubsystemBase {
 
   public int getHoodPosition(double distance) {
     if(distance < 57 + hoodDistanceOffset) {
+      setHoodPos(0.055);
       return 2;
     } else if (distance < 102.7 + hoodDistanceOffset) {
+      setHoodPos(0.2);
       return 3;
     } else {
+      setHoodPos(0.34);
       return 4;
     }
 }
