@@ -45,6 +45,8 @@ import frc.robot.commands.CalculatedShoot;
 import frc.robot.commands.CalibrateActuator;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.FeedShooter;
+import frc.robot.commands.HopperIn;
+import frc.robot.commands.HopperOut;
 import frc.robot.commands.Intake;
 import frc.robot.commands.IntakeWristIn;
 import frc.robot.commands.IntakeWristOut;
@@ -126,8 +128,8 @@ public class RobotContainer {
         
         joystick.a().whileTrue(calculatedShootCommand);
 
-        joystick.rightTrigger().whileTrue(new Intake());
-        joystick.leftTrigger().whileTrue(new Outtake());
+        joystick.leftTrigger().whileTrue(new Intake());
+        joystick.rightTrigger().whileTrue(new Outtake());
         // joystick.leftBumper().whileTrue(new FeedShooter());
         joystick.rightBumper().whileTrue(new OuttakeFromShooter());
 
@@ -169,7 +171,7 @@ public class RobotContainer {
 
 
      private void registerNamedCommands() //Update with Command Names
-    {
+     {
         NamedCommands.registerCommand("DriveToLadder", driveForwardOneMeter());
         try {
             NamedCommands.registerCommand("ReturnToPath", pathfindToNextPath("LadderToGoal"));
@@ -183,7 +185,15 @@ public class RobotContainer {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
+        NamedCommands.registerCommand("ManualShoot", new ManualShoot(() -> 4200));
+        NamedCommands.registerCommand("Intake", new Intake());
+        NamedCommands.registerCommand("Outtake", new Outtake());
+        NamedCommands.registerCommand("HopperIn", new HopperIn());
+        NamedCommands.registerCommand("HopperOut", new HopperOut());
+        NamedCommands.registerCommand("IntakeWristOut", new IntakeWristOut());
+        NamedCommands.registerCommand("IntakeWristIn", new IntakeWristIn());
+        NamedCommands.registerCommand("TestLnPrint", new TestLnPrint());
+        NamedCommands.registerCommand("CalculatedShoot", new CalculatedShoot());
         
     }
      public Command driveForwardOneMeter() {
