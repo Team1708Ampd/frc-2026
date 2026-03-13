@@ -5,21 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "IntakeWristOut"
+            "pathName": "Right AL to Outpost"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 2.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right AL to Outpost"
           }
         },
         {
@@ -51,6 +45,12 @@
           "type": "path",
           "data": {
             "pathName": "Depot to HUB aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CalculatedShoot"
           }
         }
       ]
