@@ -5,8 +5,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -31,7 +33,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakeSub extends SubsystemBase {
   /** Creates a new IntakeSub. */
   
-  //TalonFX intakeMotor;
+  TalonFX intakeMotor;
   TalonFX intakeMotor2;
   TalonFX hopperMotor;
   TalonFX feederMotor;
@@ -39,7 +41,7 @@ public class IntakeSub extends SubsystemBase {
   
 
   public IntakeSub() {
-    //intakeMotor = new TalonFX(12);
+    intakeMotor = new TalonFX(12);
     intakeMotor2 = new TalonFX(20);
     hopperMotor = new TalonFX(13);
     feederMotor = new TalonFX(8);
@@ -51,16 +53,17 @@ public class IntakeSub extends SubsystemBase {
     config.Voltage.PeakForwardVoltage = 10.0;
     config.Voltage.PeakReverseVoltage = -10.0;
 
-    //intakeMotor.getConfigurator().apply(config);
+    intakeMotor.getConfigurator().apply(config);
     intakeMotor2.getConfigurator().apply(config);
 
     hopperMotor.getConfigurator().apply(config);
     feederMotor.getConfigurator().apply(config);
     wristMotor.getConfigurator().apply(config);
+
+    intakeMotor.setControl(new Follower(intakeMotor2.getDeviceID(), MotorAlignmentValue.Opposed));
   }
 
   public void setAllIntakes(double power) {
-    //intakeMotor.set(-power);
     intakeMotor2.set(power);
     hopperMotor.set(power);
     feederMotor.set(power);

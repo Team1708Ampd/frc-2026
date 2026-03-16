@@ -45,9 +45,9 @@ public class ShooterSub extends SubsystemBase {
     rightShooter = new TalonFX(15);
 
     leftServo = new Servo(0);
-    leftServo.setBoundsMicroseconds(2000, 1501, 1500, 1499, 1000);
+    leftServo.setBoundsMicroseconds(2400, 2000, 1500, 1000, 600);
     rightServo = new Servo(1);
-    rightServo.setBoundsMicroseconds(2000, 1501, 1500, 1499, 1000);
+    rightServo.setBoundsMicroseconds(2400, 2000, 1500, 1000, 600);
 
     config = new TalonFXConfiguration();
 
@@ -117,10 +117,13 @@ public class ShooterSub extends SubsystemBase {
 
   public int getHoodPosition(double distance) {
     if(distance < 57 + hoodDistanceOffset) {
+      setHoodPos(0.258);
       return 2;
     } else if (distance < 102.7 + hoodDistanceOffset) {
+      setHoodPos(0.333);
       return 3;
     } else {
+      setHoodPos(0.41);
       return 4;
     }
 }

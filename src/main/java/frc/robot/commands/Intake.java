@@ -22,7 +22,7 @@ public class Intake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.intakeSub.setIntakePower(.9); //lowered due to intake overheating
+    Robot.intakeSub.setIntakePower(1); //lowered due to intake overheating
   }
 
   // Called once the command ends or is interrupted.

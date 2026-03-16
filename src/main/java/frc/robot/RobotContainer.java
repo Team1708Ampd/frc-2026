@@ -116,13 +116,8 @@ public class RobotContainer {
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.85) // Drive counterclockwise with negative X (left)
         ));
 
-        Command shootCommand = Commands.sequence(
-           new ManualShoot(() -> shootPower).until(() -> Robot.shooterSub.isShooterJammed()),
-           new OuttakeFromShooter().withTimeout(0.5)
-        ).repeatedly();
-
         Command calculatedShootCommand = Commands.sequence(
-           new CalculatedShoot().until(() -> Robot.shooterSub.isShooterJammed()),
+           new CalculatedShoot(drivetrain).until(() -> Robot.shooterSub.isShooterJammed()),
            new OuttakeFromShooter().withTimeout(0.5)
         ).repeatedly();
         
@@ -130,29 +125,14 @@ public class RobotContainer {
 
         joystick.leftTrigger().whileTrue(new Intake());
         joystick.rightTrigger().whileTrue(new Outtake());
-        // joystick.leftBumper().whileTrue(new FeedShooter());
         joystick.rightBumper().whileTrue(new OuttakeFromShooter());
-
-        // joystick.start().onTrue(new SetActuators(() -> 0.2));
-        // joystick.back().onTrue(new SetActuators(() -> 0.3));
-
-        // joystick.povUp().onTrue(Commands.runOnce(() -> incrementShoot()));
-        // joystick.povDown().onTrue(Commands.runOnce(() -> decrementShoot()));
 
         joystick.povUp().whileTrue(new IntakeWristIn());
         joystick.povDown().whileTrue(new IntakeWristOut());
 
-        // joystick.leftTrigger().whileTrue(new ManualShoot());
-        // joystick.b().toggleOnTrue(new ShootAtDistance());
-        // joystick.leftTrigger().whileTrue(new ManualShoot());
-        // joystick.b().toggleOnTrue(new ShootAtDistance());
+        joystick.start().onTrue(new SetActuators(() -> 0.46));
+        joystick.back().onTrue(new SetActuators(() -> 0.26));
 
-        // mech.start().whileTrue(new CalibrateActuator(shooterSub.getLeftServo(), shooterSub.getRightServo(), mech));
-        
-
-        // joystick.x().onTrue(
-        //     new DeferredCommand(() -> driveForwardOneMeter(), Set.of(drivetrain))
-        // );
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -193,7 +173,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("IntakeWristOut", new IntakeWristOut());
         NamedCommands.registerCommand("IntakeWristIn", new IntakeWristIn());
         NamedCommands.registerCommand("TestLnPrint", new TestLnPrint());
-        NamedCommands.registerCommand("CalculatedShoot", new CalculatedShoot());
+        NamedCommands.registerCommand("CalculatedShoot", new CalculatedShoot(drivetrain));
         
     }
      public Command driveForwardOneMeter() {
