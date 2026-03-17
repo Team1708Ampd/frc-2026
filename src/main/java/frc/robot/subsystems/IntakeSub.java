@@ -41,13 +41,13 @@ public class IntakeSub extends SubsystemBase {
   
 
   public IntakeSub() {
-    intakeMotor = new TalonFX(20);
-    intakeMotor2 = new TalonFX(12);
+    intakeMotor = new TalonFX(12);
+    intakeMotor2 = new TalonFX(20);
     hopperMotor = new TalonFX(13);
     feederMotor = new TalonFX(8);
     wristMotor = new TalonFX(10);
 
-    intakeMotor2.setControl(new Follower(intakeMotor.getDeviceID(), MotorAlignmentValue.Aligned));
+    intakeMotor.setControl(new Follower(intakeMotor2.getDeviceID(), MotorAlignmentValue.Opposed));
   }
 
   public void setAllIntakes(double power) {
