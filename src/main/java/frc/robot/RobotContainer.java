@@ -4,18 +4,17 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 import org.json.simple.parser.ParseException;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.GoalEndState;
@@ -30,9 +29,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,11 +36,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.CalculatedShoot;
-import frc.robot.commands.CalibrateActuator;
-import frc.robot.commands.DriveToDistance;
-import frc.robot.commands.FeedShooter;
 import frc.robot.commands.HopperIn;
 import frc.robot.commands.HopperOut;
 import frc.robot.commands.Intake;
@@ -91,7 +83,7 @@ public class RobotContainer {
         registerNamedCommands();
 
 
-        autoChooser = AutoBuilder.buildAutoChooser("testing"); // Default auto will be `Commands.none()`
+        autoChooser = AutoBuilder.buildAutoChooser("Right AL, Outpost, HUB, Depot, HUB"); // Default auto will be `Commands.none()`
         CommandScheduler.getInstance().schedule(getAutonomousCommand());
         SmartDashboard.putData("Auto Chooser", autoChooser);
 

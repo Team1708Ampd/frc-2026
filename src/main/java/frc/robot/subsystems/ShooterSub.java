@@ -83,10 +83,10 @@ public class ShooterSub extends SubsystemBase {
     System.out.print("LEFT ERROR: " + leftError + ", CURRENT: " + currentLeft);
 
     
-    // Only allow feeding if the shooter is within 2 rotations per second of targethhj
-    return (middleError <= 4.0) &&
-      (leftError <= 4.0) &&
-      (rightError <= 4.0); 
+    // Only allow feeding if the shooter is within 2 rotations per second of target
+    return (middleError <= 7.0) &&
+      (leftError <= 7.0) &&
+      (rightError <= 7.0); 
 }
 
   public void setTargetVelocity() {
