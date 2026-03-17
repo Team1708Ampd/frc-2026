@@ -36,7 +36,6 @@ public class IntakeSub extends SubsystemBase {
   /** Creates a new IntakeSub. */
   
   TalonFX intakeMotor;
-  TalonFX intakeMotor;
   TalonFX intakeMotor2;
   TalonFX hopperMotor;
   TalonFX feederMotor;
