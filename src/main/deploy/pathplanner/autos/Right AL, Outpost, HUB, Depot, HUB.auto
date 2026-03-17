@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeWristOut"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Right AL to Outpost"
@@ -13,13 +19,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost to Depot"
+            "pathName": "Outpost to HUB"
           }
         },
         {
@@ -27,15 +33,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "wait",
                 "data": {
-                  "pathName": "Depot Collect"
+                  "waitTime": 2.5
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "CalculatedShoot"
                 }
               }
             ]
@@ -44,13 +50,32 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot to HUB aim"
+            "pathName": "HUB to Depot (Collect)"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "CalculatedShoot"
+            "pathName": "Upper Depot to HUB"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CalculatedShoot"
+                }
+              }
+            ]
           }
         }
       ]

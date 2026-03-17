@@ -6,7 +6,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.HootAutoReplay;
@@ -34,6 +36,7 @@ public class IntakeSub extends SubsystemBase {
   /** Creates a new IntakeSub. */
   
   TalonFX intakeMotor;
+  TalonFX intakeMotor;
   TalonFX intakeMotor2;
   TalonFX hopperMotor;
   TalonFX feederMotor;
@@ -41,6 +44,7 @@ public class IntakeSub extends SubsystemBase {
   
 
   public IntakeSub() {
+    intakeMotor = new TalonFX(12);
     intakeMotor = new TalonFX(12);
     intakeMotor2 = new TalonFX(20);
     hopperMotor = new TalonFX(13);
