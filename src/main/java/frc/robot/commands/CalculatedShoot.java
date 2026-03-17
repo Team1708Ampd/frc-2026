@@ -36,7 +36,7 @@ public class CalculatedShoot extends Command {
       this.drivetrain = drivetrain;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(Robot.shooterSub, Robot.intakeSub, Robot.cameraSub, drivetrain);
-    m_pid.setTolerance(3);
+    m_pid.setTolerance(4.5);
   }
 
     DoubleSupplier targetRPM;

@@ -84,9 +84,9 @@ public class ShooterSub extends SubsystemBase {
 
     
     // Only allow feeding if the shooter is within 2 rotations per second of target
-    return (middleError <= 5.0) &&
-      (leftError <= 5.0) &&
-      (rightError <= 5.0); 
+    return (middleError <= 7.0) &&
+      (leftError <= 7.0) &&
+      (rightError <= 7.0); 
 }
 
   public void setTargetVelocity() {
