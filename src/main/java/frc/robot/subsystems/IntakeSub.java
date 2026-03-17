@@ -64,14 +64,13 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public void setAllIntakes(double power) {
-    intakeMotor2.set(power);
+    intakeMotor2.set(-power);
     hopperMotor.set(power);
     feederMotor.set(power);
   }
 
   public void setIntakePower(double power) {
-    // intakeMotor.set(-power);
-    intakeMotor2.set(power);
+    intakeMotor2.set(-power);
   }
 
   public void setHopperPower(double power) {
