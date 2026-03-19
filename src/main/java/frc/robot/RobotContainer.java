@@ -105,15 +105,10 @@ public class RobotContainer {
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.7) // Drive forward with negative Y (forward)
                     .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.7) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.85) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.9) // Drive counterclockwise with negative X (left)
         ));
-
-        Command calculatedShootCommand = Commands.sequence(
-           new CalculatedShoot(drivetrain).until(() -> Robot.shooterSub.isShooterJammed()),
-           new OuttakeFromShooter().withTimeout(0.5)
-        ).repeatedly();
         
-        joystick.a().whileTrue(calculatedShootCommand);
+        joystick.a().whileTrue(new CalculatedShoot(drivetrain));
 
         joystick.rightTrigger().whileTrue(new Intake());
         joystick.leftTrigger().whileTrue(new Outtake());

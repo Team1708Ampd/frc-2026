@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -46,27 +47,23 @@ public class CalculatedShoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_pid.reset();
     distance = Robot.cameraSub.getDistance();
-    hoodPos = Robot.shooterSub.getHoodPosition(distance);
     targetRPM = () -> Robot.shooterSub.calculateTargetRPS(distance) * 60;
 
-    System.out.println("DISTANCE: " + distance);
-    System.out.println("HOOD POSITION: " + hoodPos);
-    System.out.println("RPM: " + targetRPM); 
-    
-    m_pid.reset();
+    // 1. Always spool the shooter to the calculated target
+    Robot.shooterSub.runShooter(() -> targetRPM.getAsDouble());
+    Timer.delay(0.4);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     distance = Robot.cameraSub.getDistance();
-    hoodPos = Robot.shooterSub.getHoodPosition(distance);
     targetRPM = () -> Robot.shooterSub.calculateTargetRPS(distance) * 60;
 
     // 1. Always spool the shooter to the calculated target
     Robot.shooterSub.runShooter(() -> targetRPM.getAsDouble());
-    boolean rawReady = Robot.shooterSub.isShooterReady(targetRPM);
 
     boolean hasTarget = table.getEntry("tv").getDouble(0) == 1.0;
     double tx = table.getEntry("tx").getDouble(0);
@@ -97,10 +94,10 @@ public class CalculatedShoot extends Command {
 
     // 2. The SHOOTING Logic
     // Only fire if the shooter is at the right RPM AND the drivetrain is aimed
-    boolean smoothReady = debouncer.calculate(rawReady && isAimed);
+    boolean smoothReady = debouncer.calculate(isAimed);
 
     if (smoothReady) {
-      Robot.intakeSub.setAllIntakes(0.8);
+      Robot.intakeSub.setAllIntakes(0.95);
     } else {
       Robot.intakeSub.setAllIntakes(0);
     }

@@ -71,79 +71,16 @@ public class ShooterSub extends SubsystemBase {
     rightShooter.setControl(m_velocityRequest.withVelocity(rpm.getAsDouble() / 60));
   }
 
-  public boolean isShooterReady(DoubleSupplier targetRPM) {
-    double currentLeft = leftShooter.getVelocity().getValueAsDouble();
-    double currentMiddle = middleShooter.getVelocity().getValueAsDouble();
-    double currentRight = rightShooter.getVelocity().getValueAsDouble();
-
-    double leftError = Math.abs(currentLeft - (targetRPM.getAsDouble() / 60));
-    double middleError = Math.abs(currentMiddle - (targetRPM.getAsDouble() / 60));
-    double rightError = Math.abs(currentRight - (targetRPM.getAsDouble() / 60));
-
-    // System.out.print("LEFT ERROR: " + leftError + ", CURRENT: " + currentLeft);
-    System.out.println("SHOOTER POWER: " + leftShooter.getVelocity().getValueAsDouble() * 60);
-
-    
-    // Only allow feeding if the shooter is within 2 rotations per second of target
-    return (middleError <= 7.0) &&
-      (leftError <= 7.0) &&
-      (rightError <= 7.0); 
-}
-
-  public void setTargetVelocity() {
-
-  }
-
-  public void setHoodPos(double pos) {
-    leftServo.setPosition(pos);
-    rightServo.setPosition(pos);
-  }
-
-  public boolean isShooterJammed() {
-    double leftCurrent = leftShooter.getStatorCurrent().getValueAsDouble();
-    double leftVelocity = leftShooter.getVelocity().getValueAsDouble();
-
-    double middleCurrent = middleShooter.getStatorCurrent().getValueAsDouble();
-    double middleVelocity = middleShooter.getVelocity().getValueAsDouble();
-
-    double rightCurrent = rightShooter.getStatorCurrent().getValueAsDouble();
-    double rightVelocity = rightShooter.getVelocity().getValueAsDouble();
-
-    return (Math.abs(leftVelocity) < 3 && leftCurrent > 40) ||
-           (Math.abs(middleVelocity) < 3 && middleCurrent > 40) ||
-           (Math.abs(rightVelocity) < 3 && rightCurrent > 40);
-  }
-
-  double hoodDistanceOffset = 3;
-
-  public int getHoodPosition(double distance) {
-    if(distance < 57 || Math.abs(distance - 57) <= hoodDistanceOffset) {
-      setHoodPos(0.258);
-      return 2;
-    } else if (distance < 102.7  || Math.abs(distance - 57) > hoodDistanceOffset) {
-      setHoodPos(0.333);
-      return 3;
-    } else {
-      setHoodPos(0.41);
-      return 4;
-    }
-}
 
   public double calculateTargetRPS(double distance) {
-    int pos = getHoodPosition(distance); // Updates and returns the current state
+    // 1. First, let the hood determine the state (handles hysteresis and busy-guard)    
     double rps;
-    if (distance <= 57.0) {
-      distance += 6;
-      rps = (0.18882 * distance) + 60.41405; // Pos 2
-    } else if (distance <= 102.7) {
-      distance += 20;
-      rps = (0.21168 * distance) + 53.79669; // Pos 3
-    } else {
-      distance += 20;
-      rps = (0.07534 * distance) + 63.20878; // Pos 4
-    }
 
-    return MathUtil.clamp(rps, 60.0, 100.0);
+    // 2. Use the math formula that MATCHES the physical hood position
+    distance += 6;
+    rps = (0.18882 * distance) + 60.41405; 
+
+    return edu.wpi.first.math.MathUtil.clamp(rps, 60.0, 100.0);
 }
 
   @Override

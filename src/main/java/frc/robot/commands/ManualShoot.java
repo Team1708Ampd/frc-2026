@@ -30,20 +30,14 @@ public class ManualShoot extends Command {
   @Override
   public void execute() {
     Robot.shooterSub.runShooter(() -> targetRPM.getAsDouble());
-    boolean rawReady = Robot.shooterSub.isShooterReady(targetRPM);
     
     // The debouncer "smooths" the rawReady signal
-    boolean smoothReady = debouncer.calculate(rawReady);
 
-    if (smoothReady) {
       Robot.intakeSub.setAllIntakes(0.7);
-    } else {
-      Robot.intakeSub.setAllIntakes(0);
-    }
   }
 
   // Called once the command ends or is interrupted.
-  @Override
+  @Override 
   public void end(boolean interrupted) {
     // Robot.shooterSub.setAllShooters(0);
     Robot.shooterSub.runShooter(() -> 0);
