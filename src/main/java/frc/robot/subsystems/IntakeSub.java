@@ -13,25 +13,38 @@ public class IntakeSub extends SubsystemBase {
   /** Creates a new IntakeSub. */
   
   TalonFX intakeMotor;
+  TalonFX intakeMotor2;
   TalonFX hopperMotor;
   TalonFX feederMotor;
   TalonFX wristMotor; //
 
   public IntakeSub() {
     intakeMotor = new TalonFX(12);
+    intakeMotor2 = new TalonFX(20);
     hopperMotor = new TalonFX(13);
     feederMotor = new TalonFX(8);
     wristMotor = new TalonFX(10);
+    
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Voltage.PeakForwardVoltage = 10.0;
+    config.Voltage.PeakReverseVoltage = -10.0;
+
+    intakeMotor.getConfigurator().apply(config);
+    hopperMotor.getConfigurator().apply(config);
+    feederMotor.getConfigurator().apply(config);
+    wristMotor.getConfigurator().apply(config);
   }
 
   public void setBothIntakes(double power) {
     intakeMotor.set(power);
+    intakeMotor2.set(power);
     hopperMotor.set(power);
     feederMotor.set(power);
   }
 
   public void setIntakePower(double power) {
     intakeMotor.set(power);
+    intakeMotor2.set(power);
   }
 
   public void setHopperPower(double power) {
