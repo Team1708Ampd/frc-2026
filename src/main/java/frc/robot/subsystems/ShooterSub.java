@@ -80,7 +80,8 @@ public class ShooterSub extends SubsystemBase {
     double middleError = Math.abs(currentMiddle - (targetRPM.getAsDouble() / 60));
     double rightError = Math.abs(currentRight - (targetRPM.getAsDouble() / 60));
 
-    System.out.print("LEFT ERROR: " + leftError + ", CURRENT: " + currentLeft);
+    // System.out.print("LEFT ERROR: " + leftError + ", CURRENT: " + currentLeft);
+    System.out.println("SHOOTER POWER: " + leftShooter.getVelocity().getValueAsDouble() * 60);
 
     
     // Only allow feeding if the shooter is within 2 rotations per second of target
@@ -131,6 +132,7 @@ public class ShooterSub extends SubsystemBase {
   public double calculateTargetRPS(double distance) {
     int pos = getHoodPosition(distance); // Updates and returns the current state
     double rps;
+    distance += 12;
     if (distance <= 57.0) {
         rps = (0.18882 * distance) + 60.41405; // Pos 2
     } else if (distance <= 102.7) {
