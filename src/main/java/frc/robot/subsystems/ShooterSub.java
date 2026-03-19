@@ -114,13 +114,13 @@ public class ShooterSub extends SubsystemBase {
            (Math.abs(rightVelocity) < 3 && rightCurrent > 40);
   }
 
-  double hoodDistanceOffset = 1;
+  double hoodDistanceOffset = 3;
 
   public int getHoodPosition(double distance) {
-    if(distance < 57 + hoodDistanceOffset) {
+    if(distance < 57 || Math.abs(distance - 57) <= hoodDistanceOffset) {
       setHoodPos(0.258);
       return 2;
-    } else if (distance < 102.7 + hoodDistanceOffset) {
+    } else if (distance < 102.7  || Math.abs(distance - 57) > hoodDistanceOffset) {
       setHoodPos(0.333);
       return 3;
     } else {
@@ -132,13 +132,15 @@ public class ShooterSub extends SubsystemBase {
   public double calculateTargetRPS(double distance) {
     int pos = getHoodPosition(distance); // Updates and returns the current state
     double rps;
-    distance += 12;
     if (distance <= 57.0) {
-        rps = (0.18882 * distance) + 60.41405; // Pos 2
+      distance += 6;
+      rps = (0.18882 * distance) + 60.41405; // Pos 2
     } else if (distance <= 102.7) {
-        rps = (0.21168 * distance) + 53.79669; // Pos 3
+      distance += 20;
+      rps = (0.21168 * distance) + 53.79669; // Pos 3
     } else {
-        rps = (0.07534 * distance) + 63.20878; // Pos 4
+      distance += 20;
+      rps = (0.07534 * distance) + 63.20878; // Pos 4
     }
 
     return MathUtil.clamp(rps, 60.0, 100.0);

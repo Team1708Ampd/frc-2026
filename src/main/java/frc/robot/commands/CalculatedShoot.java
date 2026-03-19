@@ -100,7 +100,7 @@ public class CalculatedShoot extends Command {
     boolean smoothReady = debouncer.calculate(rawReady && isAimed);
 
     if (smoothReady) {
-      Robot.intakeSub.setAllIntakes(0.75);
+      Robot.intakeSub.setAllIntakes(0.8);
     } else {
       Robot.intakeSub.setAllIntakes(0);
     }
