@@ -23,7 +23,6 @@ public class SetActuators extends Command {
   @Override
   public void initialize() {
     System.out.println("MOVE ACTUATORS TO: " + pos.getAsDouble());
-    Robot.shooterSub.setHoodPos(pos.getAsDouble());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
