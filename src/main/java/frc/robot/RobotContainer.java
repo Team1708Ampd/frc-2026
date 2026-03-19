@@ -115,8 +115,8 @@ public class RobotContainer {
         
         joystick.a().whileTrue(calculatedShootCommand);
 
-        joystick.leftTrigger().whileTrue(new Intake());
-        joystick.rightTrigger().whileTrue(new Outtake());
+        joystick.rightTrigger().whileTrue(new Intake());
+        joystick.leftTrigger().whileTrue(new Outtake());
         joystick.rightBumper().whileTrue(new OuttakeFromShooter());
 
         joystick.povUp().whileTrue(new IntakeWristIn());

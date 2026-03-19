@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.506804564907275,
-        "y": 0.6515406562054205
+        "x": 3.5732667617689007,
+        "y": 3.1098858773181166
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5068045649072748,
+        "x": 2.072382310984308,
+        "y": 3.122824536376604
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.32566333808844494,
         "y": 0.6515406562054205
       },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.150014265335235,
-        "y": 3.7309415121255345
-      },
       "prevControl": {
-        "x": 2.162952924393723,
-        "y": 2.8122967189728967
-      },
-      "nextControl": {
-        "x": 2.132153323934254,
-        "y": 4.999068351595197
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 0.6879457917261056,
-        "y": 5.982268188302426
-      },
-      "prevControl": {
-        "x": 1.7100998573466477,
-        "y": 6.008145506419401
+        "x": 1.5548359486447931,
+        "y": 0.6256633380884444
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,10 +31,17 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeWristOut",
+      "waypointRelativePos": 0.3438303341902281,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -66,5 +57,5 @@
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
