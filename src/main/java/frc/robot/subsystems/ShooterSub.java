@@ -77,7 +77,7 @@ public class ShooterSub extends SubsystemBase {
     double rps;
 
     // 2. Use the math formula that MATCHES the physical hood position
-    distance += 6;
+    distance += 2;
     rps = (0.18882 * distance) + 60.41405; 
 
     return edu.wpi.first.math.MathUtil.clamp(rps, 60.0, 100.0);
