@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -38,29 +39,27 @@ public class IntakeSub extends SubsystemBase {
   TalonFX intakeMotor;
   TalonFX intakeMotor2;
   TalonFX hopperMotor;
-  TalonFX feederMotor;
   TalonFX wristMotor; //
   
 
   public IntakeSub() {
     intakeMotor = new TalonFX(12);
-    intakeMotor = new TalonFX(12);
     intakeMotor2 = new TalonFX(20);
     hopperMotor = new TalonFX(13);
-    feederMotor = new TalonFX(8);
     wristMotor = new TalonFX(10);
     
-
-    
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.Voltage.PeakForwardVoltage = 10.0;
-    config.Voltage.PeakReverseVoltage = -10.0;
+    config.Voltage.PeakForwardVoltage = 11.0;
+    config.Voltage.PeakReverseVoltage = -11.0;
+    config.CurrentLimits.SupplyCurrentLimit = 35.0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = 60;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     intakeMotor.getConfigurator().apply(config);
     intakeMotor2.getConfigurator().apply(config);
 
     hopperMotor.getConfigurator().apply(config);
-    feederMotor.getConfigurator().apply(config);
     wristMotor.getConfigurator().apply(config);
 
     intakeMotor.setControl(new Follower(intakeMotor2.getDeviceID(), MotorAlignmentValue.Opposed));
@@ -69,7 +68,6 @@ public class IntakeSub extends SubsystemBase {
   public void setAllIntakes(double power) {
     intakeMotor2.set(-power);
     hopperMotor.set(power);
-    feederMotor.set(power);
   }
 
   public void setIntakePower(double power) {
@@ -77,16 +75,8 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public void setHopperPower(double power) {
-    hopperMotor.set(power);
-  }
-
-  public void setFeederPower(double power) {
-    feederMotor.set(power);
-    hopperMotor.set(power);
-  }
-
-  public void setFeederOnly(double power) {
-    feederMotor.set(power);
+    VoltageOut m_voltageRequest = new VoltageOut(0);
+    hopperMotor.setControl(m_voltageRequest.withOutput(power));  
   }
 
   public void setWristPower(double power) {

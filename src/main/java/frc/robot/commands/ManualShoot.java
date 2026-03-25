@@ -13,35 +13,49 @@ import frc.robot.Robot;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ManualShoot extends Command {
 
-  DoubleSupplier targetRPM;
-  private final Debouncer debouncer = new Debouncer(0.05, Debouncer.DebounceType.kBoth);
+  DoubleSupplier power;
+  private final Debouncer m_aimDebouncer = new Debouncer(0.05, Debouncer.DebounceType.kBoth);
+
+
   /** Creates a new ManualShoot. */
-  public ManualShoot(DoubleSupplier targetRPM) {
+  public ManualShoot(DoubleSupplier power) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.targetRPM = targetRPM;
-    addRequirements(Robot.shooterSub, Robot.intakeSub);
+    this.power = power;
+    addRequirements(Robot.shooterSub, Robot.cameraSub);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    System.out.println("DISTANCE: " + Robot.cameraSub.getDistance());
+    System.out.println("POWER: " + power);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.shooterSub.runShooter(() -> targetRPM.getAsDouble());
+    Robot.shooterSub.runShooter(power.getAsDouble());
+    boolean shooterReady = Robot.shooterSub.isShooterReady(power.getAsDouble() / 60);     
     
-    // The debouncer "smooths" the rawReady signal
+    boolean ready = m_aimDebouncer.calculate(shooterReady);
 
-      Robot.intakeSub.setAllIntakes(0.7);
+    if(ready) {
+      Robot.shooterSub.runProgressiveFeeders(power.getAsDouble() / 60);
+      Robot.intakeSub.setIntakePower(1);
+      Robot.intakeSub.setHopperPower(5);
+    } else  {
+      Robot.shooterSub.stopFeeders();
+      Robot.intakeSub.setHopperPower(0);
+    }
   }
 
   // Called once the command ends or is interrupted.
-  @Override 
+  @Override
   public void end(boolean interrupted) {
-    // Robot.shooterSub.setAllShooters(0);
-    Robot.shooterSub.runShooter(() -> 0);
-    Robot.intakeSub.setAllIntakes(0);
+    Robot.shooterSub.runShooter(0);
+    Robot.shooterSub.stopFeeders();
+    Robot.intakeSub.setIntakePower(0);
+    Robot.intakeSub.setHopperPower(0);
   }
 
   // Returns true when the command should end.

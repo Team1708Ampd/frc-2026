@@ -36,19 +36,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.commands.CalculatedShoot;
-import frc.robot.commands.HopperIn;
-import frc.robot.commands.HopperOut;
+import frc.robot.commands.FeedAndShoot;
 import frc.robot.commands.Intake;
 import frc.robot.commands.IntakeWristIn;
 import frc.robot.commands.IntakeWristOut;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.Outtake;
-import frc.robot.commands.OuttakeFromShooter;
-import frc.robot.commands.SetActuators;
-import frc.robot.commands.TestLnPrint;
+import frc.robot.commands.OuttakeAll;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.ShooterSub;
 
 
 public class RobotContainer {
@@ -71,7 +68,7 @@ public class RobotContainer {
 
     private final AprilTagFieldLayout m_fieldLayout;
 
-    private double shootPower = 5000;
+    private double shootPower = 4000;
     
 // AUTO RELATED VARIABLES AND DEFS
     private SendableChooser<Command> autoChooser;
@@ -108,18 +105,17 @@ public class RobotContainer {
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.9) // Drive counterclockwise with negative X (left)
         ));
         
-        joystick.a().whileTrue(new CalculatedShoot(drivetrain));
+        joystick.a().whileTrue(new FeedAndShoot(drivetrain));
+        joystick.x().whileTrue(new ManualShoot(() -> shootPower));
 
-        joystick.rightTrigger().whileTrue(new Intake());
-        joystick.leftTrigger().whileTrue(new Outtake());
-        joystick.rightBumper().whileTrue(new OuttakeFromShooter());
+        joystick.b().whileTrue(Robot.shooterSub.getFeederDebugCommand());
+
+        joystick.leftTrigger().whileTrue(new Intake());
+        joystick.rightTrigger().whileTrue(new Outtake());
+        joystick.rightBumper().whileTrue(new OuttakeAll());
 
         joystick.povUp().whileTrue(new IntakeWristIn());
         joystick.povDown().whileTrue(new IntakeWristOut());
-
-
-        joystick.start().onTrue(new SetActuators(() -> 0.46));
-        joystick.back().onTrue(new SetActuators(() -> 0.26));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -140,146 +136,13 @@ public class RobotContainer {
 
      private void registerNamedCommands() //Update with Command Names
      {
-        NamedCommands.registerCommand("DriveToLadder", driveForwardOneMeter());
-        try {
-            NamedCommands.registerCommand("ReturnToPath", pathfindToNextPath("LadderToGoal"));
-        } catch (FileVersionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        NamedCommands.registerCommand("ManualShoot", new ManualShoot(() -> 4200));
-        NamedCommands.registerCommand("Intake", new Intake());
-        NamedCommands.registerCommand("Outtake", new Outtake());
-        NamedCommands.registerCommand("HopperIn", new HopperIn());
-        NamedCommands.registerCommand("HopperOut", new HopperOut());
         NamedCommands.registerCommand("IntakeWristOut", new IntakeWristOut());
         NamedCommands.registerCommand("IntakeWristIn", new IntakeWristIn());
-        NamedCommands.registerCommand("TestLnPrint", new TestLnPrint());
-        NamedCommands.registerCommand("CalculatedShoot", new CalculatedShoot(drivetrain));
-        
+        NamedCommands.registerCommand("CalculatedShoot", new FeedAndShoot(drivetrain));
+        NamedCommands.registerCommand("Intake", new Intake());
+        NamedCommands.registerCommand("Outtake", new Outtake());
+        NamedCommands.registerCommand("OuttakeAll", new OuttakeAll());
     }
-     public Command driveForwardOneMeter() {
-        return Commands.defer(() -> {
-            // 1. Setup Constants
-            final double lensHeightInches = 27.0;
-            final double tagHeightInches = 21.75;
-            final double mountAngleDegrees = 8.1798331;
-            final double targetDistanceInches = 75.0;
-
-            // 2. Check for Target
-            if (!LimelightHelpers.getTV("limelight") || LimelightHelpers.getFiducialID("limelight") != 15) {
-                return Commands.none();
-            }
-
-            // 3. Trig Calculation
-            double ty = LimelightHelpers.getTY("limelight");
-            double tx = LimelightHelpers.getTX("limelight");
-            double angleToGoalRadians = Math.toRadians(mountAngleDegrees + ty);
-            double currentDistanceInches = (tagHeightInches - lensHeightInches) / Math.tan(angleToGoalRadians);
-
-            // 4. Transform Calculation (Inches to Meters)
-            double distanceToMoveMeters = (currentDistanceInches - targetDistanceInches) * 0.0254;
-
-            Pose2d currentPose = drivetrain.getState().Pose;
-            Pose2d targetPose = currentPose.transformBy(
-                new Transform2d(new Translation2d(distanceToMoveMeters, 0.0), Rotation2d.fromDegrees(-tx))
-            );
-
-            // 5. Build Path
-            PathPlannerPath path = new PathPlannerPath(
-                PathPlannerPath.waypointsFromPoses(currentPose, targetPose),
-                new PathConstraints(1.5, 1.5, Math.PI, 2 * Math.PI),
-                new IdealStartingState(0.0, currentPose.getRotation()),
-                new GoalEndState(0.0, targetPose.getRotation())
-            );
-
-            path.preventFlipping = true;
-            return AutoBuilder.followPath(path);
-        }, Set.of(drivetrain));
-    }
- 
-    public Command pathfindToNextPath(String nextPathName) throws FileVersionException, IOException, ParseException {
-    // This creates a command that pathfinds to the start of a path file 
-    // and then follows it seamlessly.
-     return AutoBuilder.pathfindThenFollowPath(
-            PathPlannerPath.fromPathFile(nextPathName),
-            new PathConstraints(3.0, 3.0, Math.PI, 2 * Math.PI)
-        ); 
-    }
-
-
-        // NamedCommands.registerCommand("DriveToLadder", driveForwardOneMeter());
-        // try {
-        //     NamedCommands.registerCommand("ReturnToPath", pathfindToNextPath("LadderToGoal"));
-        // } catch (FileVersionException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // } catch (IOException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // } catch (ParseException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // }
-    //}
-       
-    
-
-
-    // public Command driveForwardOneMeter() {
-    //     return Commands.defer(() -> {
-    //         // 1. Setup Constants
-    //         final double lensHeightInches = 27.0;
-    //         final double tagHeightInches = 21.75;
-    //         final double mountAngleDegrees = 8.1798331;
-    //         final double targetDistanceInches = 75.0;
-
-    //         // 2. Check for Target
-    //         if (!LimelightHelpers.getTV("limelight") || LimelightHelpers.getFiducialID("limelight") != 15) {
-    //             return Commands.none();
-    //         }
-
-    //         // 3. Trig Calculation
-    //         double ty = LimelightHelpers.getTY("limelight");
-    //         double tx = LimelightHelpers.getTX("limelight");
-    //         double angleToGoalRadians = Math.toRadians(mountAngleDegrees + ty);
-    //         double currentDistanceInches = (tagHeightInches - lensHeightInches) / Math.tan(angleToGoalRadians);
-
-    //         // 4. Transform Calculation (Inches to Meters)
-    //         double distanceToMoveMeters = (currentDistanceInches - targetDistanceInches) * 0.0254;
-
-    //         Pose2d currentPose = drivetrain.getState().Pose;
-    //         Pose2d targetPose = currentPose.transformBy(
-    //             new Transform2d(new Translation2d(distanceToMoveMeters, 0.0), Rotation2d.fromDegrees(-tx))
-    //         );
-
-    //         // 5. Build Path
-    //         PathPlannerPath path = new PathPlannerPath(
-    //             PathPlannerPath.waypointsFromPoses(currentPose, targetPose),
-    //             new PathConstraints(1.5, 1.5, Math.PI, 2 * Math.PI),
-    //             new IdealStartingState(0.0, currentPose.getRotation()),
-    //             new GoalEndState(0.0, targetPose.getRotation())
-    //         );
-
-    //         path.preventFlipping = true;
-    //         return AutoBuilder.followPath(path);
-    //     }, //Set.of(drivetrain));
-    // }
- 
-    // public Command pathfindToNextPath(String nextPathName) throws FileVersionException, IOException, ParseException {
-    // // This creates a command that pathfinds to the start of a path file 
-    // // and then follows it seamlessly.
-    //  return AutoBuilder.pathfindThenFollowPath(
-    //         PathPlannerPath.fromPathFile(nextPathName),
-    //         new PathConstraints(3.0, 3.0, Math.PI, 2 * Math.PI)
-    //     ); 
-    // }
 
     public void incrementShoot() {
         shootPower += 50;

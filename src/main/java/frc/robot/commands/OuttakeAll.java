@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class HopperOut extends Command {
-  /** Creates a new HopperOut. */
-  public HopperOut() {
+public class OuttakeAll extends Command {
+  /** Creates a new OuttakeAll. */
+  public OuttakeAll() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(Robot.intakeSub);
+    addRequirements(Robot.intakeSub, Robot.shooterSub);
   }
 
   // Called when the command is initially scheduled.
@@ -23,12 +23,15 @@ public class HopperOut extends Command {
   @Override
   public void execute() {
     Robot.intakeSub.setAllIntakes(-1);
+    Robot.shooterSub.outtakeFromShooter();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     Robot.intakeSub.setAllIntakes(0);
+    Robot.shooterSub.stopFeeders();
+    Robot.shooterSub.runShooter(0);
   }
 
   // Returns true when the command should end.
