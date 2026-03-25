@@ -44,7 +44,6 @@ public class IntakeSub extends SubsystemBase {
 
   public IntakeSub() {
     intakeMotor = new TalonFX(12);
-    intakeMotor = new TalonFX(12);
     intakeMotor2 = new TalonFX(20);
     hopperMotor = new TalonFX(13);
     feederMotor = new TalonFX(8);
