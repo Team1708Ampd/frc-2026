@@ -62,8 +62,9 @@ public class FeedAndShoot extends Command {
         // 4. SMART FEEDER GATE (The "Rule of Thirds" Spray)
         // We only feed if: Aimed + Hood Ready + Shooter at RPM
         boolean shooterReady = Robot.shooterSub.isShooterReady(m_targetRPS);        
-        boolean hoodReady = Robot.shooterSub.isHoodAtPosition();
-        boolean readyToFire = m_aimDebouncer.calculate(isAimed && shooterReady && hoodReady);
+        // boolean hoodReady = Robot.shooterSub.isHoodAtPosition();
+        boolean readyToFire = m_aimDebouncer.calculate(isAimed && shooterReady);
+        // boolean readyToFire = m_aimDebouncer.calculate(isAimed && shooterReady && hoodReady);
 
         if (readyToFire) {
             // New 3-motor logic: Hopper, Linked Stage 1/2, and Stage 3

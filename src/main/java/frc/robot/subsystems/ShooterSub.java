@@ -31,7 +31,7 @@ public class ShooterSub extends SubsystemBase {
   TalonFX feederTop;
 
   // Hood Components
-  TalonFX shooterHood;
+  // TalonFX shooterHood;
   CANcoder hoodEncoder;
   
   // Control Requests
@@ -47,11 +47,11 @@ public class ShooterSub extends SubsystemBase {
     middleShooter = new TalonFX(14);
     rightShooter = new TalonFX(15);
     
-    feederBottomAndMiddle = new TalonFX(16); // Example IDs
+    feederBottomAndMiddle = new TalonFX(8); // Example IDs
     feederTop = new TalonFX(19);
 
-    shooterHood = new TalonFX(18);
-    hoodEncoder = new CANcoder(20);
+    // shooterHood = new TalonFX(18);
+    // hoodEncoder = new CANcoder(20);
 
     /* --- Shooter Configuration --- */
     TalonFXConfiguration shooterConfig = new TalonFXConfiguration();
@@ -83,18 +83,18 @@ public class ShooterSub extends SubsystemBase {
     feederTop.getConfigurator().apply(feederConfig);
 
     /* --- Hood Configuration --- */
-    TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
-    hoodConfig.Slot0.kP = 12.0; // High P for precision positioning
-    hoodConfig.Slot0.kD = 0.1;
+    // TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
+    // hoodConfig.Slot0.kP = 12.0; // High P for precision positioning
+    // hoodConfig.Slot0.kD = 0.1;
     
-    // Link CANcoder to the Hood Motor
-    hoodConfig.Feedback.FeedbackRemoteSensorID = hoodEncoder.getDeviceID();
-    hoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    // // Link CANcoder to the Hood Motor
+    // hoodConfig.Feedback.FeedbackRemoteSensorID = hoodEncoder.getDeviceID();
+    // hoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     
-    hoodConfig.MotionMagic.MotionMagicCruiseVelocity = 5; 
-    hoodConfig.MotionMagic.MotionMagicAcceleration = 10;
+    // hoodConfig.MotionMagic.MotionMagicCruiseVelocity = 5; 
+    // hoodConfig.MotionMagic.MotionMagicAcceleration = 10;
     
-    shooterHood.getConfigurator().apply(hoodConfig);
+    // shooterHood.getConfigurator().apply(hoodConfig);
   }
 
   /** Runs the three shooter motors at target RPM */
@@ -117,16 +117,16 @@ public class ShooterSub extends SubsystemBase {
 
   public void setHoodPosition(double targetRotations) {
     m_activeHoodTarget = targetRotations;
-    shooterHood.setControl(hoodRequest.withPosition(targetRotations));
+    // shooterHood.setControl(hoodRequest.withPosition(targetRotations));
   }
 
-  public double getCurrentHoodPosition() {
-    return shooterHood.getPosition().getValueAsDouble();
-  }
+  // public double getCurrentHoodPosition() {
+  //   return shooterHood.getPosition().getValueAsDouble();
+  // }
 
-  public boolean isHoodAtPosition() {
-    return Math.abs(getCurrentHoodPosition() - m_activeHoodTarget) < 0.01;
-  }
+  // public boolean isHoodAtPosition() {
+  //   return Math.abs(getCurrentHoodPosition() - m_activeHoodTarget) < 0.01;
+  // }
 
   /** Logic to handle zone switching with hysteresis and busy-guard */
   public int updateHoodZone(double distance) {
@@ -148,10 +148,10 @@ public class ShooterSub extends SubsystemBase {
     else if (m_currentZone == 3) newTargetRotation = 0.30;
     else if (m_currentZone == 4) newTargetRotation = 0.45;
 
-    // Only update if reached previous target
-    if (isHoodAtPosition() && newTargetRotation != m_activeHoodTarget) {
-        setHoodPosition(newTargetRotation);
-    }
+    // // Only update if reached previous target
+    // if (isHoodAtPosition() && newTargetRotation != m_activeHoodTarget) {
+    //     setHoodPosition(newTargetRotation);
+    // }
 
     return m_currentZone;
   }
@@ -211,9 +211,9 @@ public void outtakeFromShooter() {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Hood/Position", getCurrentHoodPosition());
+    // SmartDashboard.putNumber("Hood/Position", getCurrentHoodPosition());
     SmartDashboard.putNumber("Hood/Target", m_activeHoodTarget);
-    SmartDashboard.putBoolean("Hood/At Target", isHoodAtPosition());
+    // SmartDashboard.putBoolean("Hood/At Target", isHoodAtPosition());
     SmartDashboard.putNumber("Shooter/Left Current", leftShooter.getSupplyCurrent().getValueAsDouble());
   }
 }
