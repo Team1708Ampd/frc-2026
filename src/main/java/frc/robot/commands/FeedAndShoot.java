@@ -44,6 +44,8 @@ public class FeedAndShoot extends Command {
 
     @Override
     public void execute() {
+            System.out.println("DISTANCE: " + Robot.cameraSub.getDistance());
+            System.out.println("POWER: " + m_targetRPS * 60);
         // 1. UPDATE TARGETS
         double distance = Robot.cameraSub.getDistance();
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
@@ -57,7 +59,7 @@ public class FeedAndShoot extends Command {
         boolean isAimed = false;
 
         double time = Timer.getFPGATimestamp() - m_startTime;
-        double frequency = 2.0; 
+        double frequency = 1.5; 
         double speed = Math.sin(time * 2 * Math.PI * frequency) * 0.3;
 
         if (hasTarget) {
