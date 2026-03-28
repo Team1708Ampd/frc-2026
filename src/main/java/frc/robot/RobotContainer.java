@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.FeedAndShoot;
@@ -68,7 +69,7 @@ public class RobotContainer {
 
     private final AprilTagFieldLayout m_fieldLayout;
 
-    private double shootPower = 4000;
+    private double shootPower = 3000;
     
 // AUTO RELATED VARIABLES AND DEFS
     private SendableChooser<Command> autoChooser;
@@ -108,14 +109,15 @@ public class RobotContainer {
         joystick.a().whileTrue(new FeedAndShoot(drivetrain));
         joystick.x().whileTrue(new ManualShoot(() -> shootPower));
 
-        joystick.b().whileTrue(Robot.shooterSub.getFeederDebugCommand());
-
         joystick.leftTrigger().whileTrue(new Intake());
         joystick.rightTrigger().whileTrue(new Outtake());
         joystick.rightBumper().whileTrue(new OuttakeAll());
 
-        joystick.povUp().whileTrue(new IntakeWristIn());
-        joystick.povDown().whileTrue(new IntakeWristOut());
+        joystick.povDown().onTrue(new InstantCommand(this::decrementShoot));
+        joystick.povUp().onTrue(new InstantCommand(this::incrementShoot));
+
+        // joystick.povUp().whileTrue(new IntakeWristIn());
+        // joystick.povDown().whileTrue(new IntakeWristOut());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

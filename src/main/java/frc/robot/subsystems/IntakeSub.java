@@ -59,7 +59,6 @@ public class IntakeSub extends SubsystemBase {
     intakeMotor.getConfigurator().apply(config);
     intakeMotor2.getConfigurator().apply(config);
 
-    hopperMotor.getConfigurator().apply(config);
     wristMotor.getConfigurator().apply(config);
 
     intakeMotor.setControl(new Follower(intakeMotor2.getDeviceID(), MotorAlignmentValue.Opposed));
@@ -75,8 +74,7 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public void setHopperPower(double power) {
-    VoltageOut m_voltageRequest = new VoltageOut(0);
-    hopperMotor.setControl(m_voltageRequest.withOutput(power));  
+    hopperMotor.set(power);
   }
 
   public void setWristPower(double power) {

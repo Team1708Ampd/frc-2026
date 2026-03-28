@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 
@@ -15,7 +16,10 @@ public class ManualShoot extends Command {
 
   DoubleSupplier power;
   private final Debouncer m_aimDebouncer = new Debouncer(0.05, Debouncer.DebounceType.kBoth);
+  private double m_startTime;
 
+  private boolean toSpeed = false;
+  private int atSpeed = 0;
 
   /** Creates a new ManualShoot. */
   public ManualShoot(DoubleSupplier power) {
@@ -28,24 +32,40 @@ public class ManualShoot extends Command {
   @Override
   public void initialize() {
     System.out.println("DISTANCE: " + Robot.cameraSub.getDistance());
-    System.out.println("POWER: " + power);
+    System.out.println("POWER: " + power.getAsDouble());
+    m_startTime = Timer.getFPGATimestamp();
+    atSpeed = 0;
+    toSpeed = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("DISTANCE: " + Robot.cameraSub.getDistance());
+    System.out.println("POWER: " + power.getAsDouble());
     Robot.shooterSub.runShooter(power.getAsDouble());
     boolean shooterReady = Robot.shooterSub.isShooterReady(power.getAsDouble() / 60);     
     
-    boolean ready = m_aimDebouncer.calculate(shooterReady);
+    double time = Timer.getFPGATimestamp() - m_startTime;
+    double frequency = 2.0; // Oscillations per second
+    double speed = Math.sin(time * 2 * Math.PI * frequency) * 0.4;
 
-    if(ready) {
+    if (!toSpeed || atSpeed < 3) {
+      toSpeed = shooterReady;
+      if (toSpeed) {
+        atSpeed++;
+      }
+    }
+
+    if(toSpeed && atSpeed >= 3) {
       Robot.shooterSub.runProgressiveFeeders(power.getAsDouble() / 60);
       Robot.intakeSub.setIntakePower(1);
-      Robot.intakeSub.setHopperPower(5);
-    } else  {
+      Robot.intakeSub.setHopperPower(1);
+      Robot.intakeSub.setWristPower(speed);
+    } else {
       Robot.shooterSub.stopFeeders();
       Robot.intakeSub.setHopperPower(0);
+      Robot.intakeSub.setWristPower(0);
     }
   }
 
@@ -56,6 +76,7 @@ public class ManualShoot extends Command {
     Robot.shooterSub.stopFeeders();
     Robot.intakeSub.setIntakePower(0);
     Robot.intakeSub.setHopperPower(0);
+    Robot.intakeSub.setWristPower(0);
   }
 
   // Returns true when the command should end.
