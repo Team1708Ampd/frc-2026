@@ -88,6 +88,8 @@ public class ShooterSub extends SubsystemBase {
         hoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         hoodConfig.MotionMagic.MotionMagicCruiseVelocity = 5; 
         hoodConfig.MotionMagic.MotionMagicAcceleration = 10;
+        hoodConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; //reversed rotation
+
         
         shooterHood.getConfigurator().apply(hoodConfig);
     }
