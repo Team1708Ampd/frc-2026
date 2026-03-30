@@ -49,8 +49,8 @@ public class ShooterSub extends SubsystemBase {
         feederBottomAndMiddle = new TalonFX(8); 
         feederTop = new TalonFX(19);
 
-        shooterHood = new TalonFX(18);
-        hoodEncoder = new CANcoder(20);
+        shooterHood = new TalonFX(21);
+        hoodEncoder = new CANcoder(5);
 
         /* --- Shooter Configuration --- */
         TalonFXConfiguration shooterConfig = new TalonFXConfiguration();
@@ -90,6 +90,11 @@ public class ShooterSub extends SubsystemBase {
         hoodConfig.MotionMagic.MotionMagicAcceleration = 10;
         
         shooterHood.getConfigurator().apply(hoodConfig);
+    }
+
+    public void moveShooterHood(double power) {
+        shooterHood.set(power);
+        System.out.println("HOOD POSITION: " + hoodEncoder.getAbsolutePosition());
     }
 
     public void runShooter(double rpm) {

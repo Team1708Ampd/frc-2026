@@ -44,6 +44,8 @@ import frc.robot.commands.IntakeWristOut;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.OuttakeAll;
+import frc.robot.commands.ShooterHoodDown;
+import frc.robot.commands.ShooterHoodUp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShooterSub;
@@ -115,6 +117,9 @@ public class RobotContainer {
 
         joystick.povDown().onTrue(new InstantCommand(this::decrementShoot));
         joystick.povUp().onTrue(new InstantCommand(this::incrementShoot));
+
+        joystick.back().whileTrue(new ShooterHoodDown());
+        joystick.start().whileTrue(new ShooterHoodUp());
 
         // joystick.povUp().whileTrue(new IntakeWristIn());
         // joystick.povDown().whileTrue(new IntakeWristOut());
