@@ -4,48 +4,76 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 
 public class CameraSub extends SubsystemBase {
-    // Accessing the Limelight NetworkTable
     private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
     private final Constants constants = new Constants();
 
+    // Physical distance (inches) from the grouped center to the true Goal Center.
+    private static final double PHYSICAL_OFFSET_INCHES = 7.0; 
+
+    private boolean m_isGrouped = false;
+
     public CameraSub() {}
 
-    /** @return True if the Limelight sees a valid target (AprilTag or Retroreflective) */
     public boolean hasTarget() {
-        // "tv" is 1.0 if a target is found, 0.0 otherwise
         return limelight.getEntry("tv").getDouble(0) == 1.0;
     }
 
-    /** @return The horizontal offset from the target in degrees (-29.8 to 29.8) */
-    public double getTX() {
-        return limelight.getEntry("tx").getDouble(0);
+    /**
+     * Checks if the Limelight currently sees multiple tags.
+     * If 2+ tags are seen, we assume 'tx' is the average of them (Grouped).
+     */
+    public boolean isSeeingMultipleTags() {
+        var results = LimelightHelpers.getLatestResults("limelight");
+        
+        // Check if the fiducial array exists and has more than one entry
+        if (results != null && results.targets_Fiducials != null) {
+            m_isGrouped = results.targets_Fiducials.length >= 2;
+            return results.targets_Fiducials.length >= 2;
+        }
+        return false;
     }
 
-    /** @return The vertical offset from the target in degrees */
+    /**
+     * @return The horizontal offset in degrees. 
+     * Applies offset ONLY if 2 or more tags are being averaged by the Limelight.
+     */
+    public double getTX() {
+        double rawTX = limelight.getEntry("tx").getDouble(0);
+        m_isGrouped = isSeeingMultipleTags();
+        
+        // If we only see ONE tag, the Limelight is already centered on it.
+        // We don't want to offset a single-tag target!
+        if (!hasTarget() || !m_isGrouped) {
+            return rawTX;
+        }
+
+        double distance = getDistance();
+        if (distance < 1.0) return rawTX;
+
+        // Dynamic offset calculation
+        double angularOffsetDegrees = Math.toDegrees(Math.atan(PHYSICAL_OFFSET_INCHES / distance));
+
+        // Adjust based on your 'too far left' observation
+        return rawTX - angularOffsetDegrees;
+    }
+
     public double getTY() {
         return limelight.getEntry("ty").getDouble(0);
     }
 
-    /** Calculates distance to the goal using trigonometry */
     public double getDistance() {
-        if (!hasTarget()) return 0.0; // Avoid math on a junk "ty" value
-
+        if (!hasTarget()) return 0.0;
         double targetOffsetAngle_Vertical = getTY();
-        
-        // Sum of the mounting angle and the offset angle seen by the camera
         double angleToGoalRadians = Math.toRadians(constants.LIMELIGHT_ANGLE + targetOffsetAngle_Vertical);
-        
-        // Standard d = (h2 - h1) / tan(a1 + a2) formula
-        double distanceFromLimelightToGoalInches = (constants.GOAL_HEIGHT - constants.LIMELIGHT_HEIGHT) 
-                                                   / Math.tan(angleToGoalRadians);
-                                                   
-        return distanceFromLimelightToGoalInches;
+        return (constants.GOAL_HEIGHT - constants.LIMELIGHT_HEIGHT) / Math.tan(angleToGoalRadians);
     }
 
     @Override
     public void periodic() {
-        // You could add SmartDashboard logging here to verify distance in the pits
+        // Cache the grouping status once per loop
+        m_isGrouped = isSeeingMultipleTags();
     }
 }
