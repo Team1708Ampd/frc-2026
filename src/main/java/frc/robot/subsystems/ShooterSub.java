@@ -144,11 +144,11 @@ public class ShooterSub extends SubsystemBase {
         if (!m_isFarZone) {
             // STANDARD ZONE: y = 0.23x + 40.4
             rps = (0.23 * distance) + 40.4;
-            setHoodPosition(0.01); 
+            // setHoodPosition(0.01); 
         } else {
             // FAR ZONE: placeholder slope
             rps = (0.15 * distance) + 55.0; 
-            setHoodPosition(0.095); 
+            // setHoodPosition(0.095); 
         }
 
         return MathUtil.clamp(rps, 45.0, 100.0);

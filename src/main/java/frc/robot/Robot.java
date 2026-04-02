@@ -56,13 +56,30 @@ public class Robot extends TimedRobot {
     }
 
     @Override
+    public void robotInit() {
+        LimelightHelpers.SetIMUMode("limelight", 4);
+    }
+
+    @Override
     public void robotPeriodic() {
         m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run(); 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
         
-        
+        double robotYawDegrees = m_robotContainer.drivetrain.getState().Pose.getRotation().getDegrees();
+    
+        LimelightHelpers.SetRobotOrientation("limelight", robotYawDegrees, 0 ,0, 0, 0, 0);
+
+        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+
+        if (mt1 != null && mt1.tagCount > 0) {
+            m_robotContainer.drivetrain.addVisionMeasurement(
+            mt1.pose,
+            mt1.timestampSeconds
+            );
+        }
     }
+    
 
     @Override
     public void disabledInit() {}
