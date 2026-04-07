@@ -103,7 +103,7 @@ public class ShooterSub extends SubsystemBase {
 
     public void moveShooterHood(double power) {
         shooterHood.set(power);
-        System.out.println("HOOD POSITION: " + hoodEncoder.getAbsolutePosition());
+        System.out.println("HOOD POSITION: " + hoodEncoder.getAbsolutePosition().getValueAsDouble());
     }
 
     public void runShooter(double rpm) {
