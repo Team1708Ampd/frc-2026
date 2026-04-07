@@ -155,7 +155,14 @@ public class ShooterSub extends SubsystemBase {
         } else {
             rpm = (12.25 * distance) + 1750;
             m_activeHoodTarget = 0.27; // Update target for the far zone
-            shooterHood.setControl(m_mmRequest.withPosition(0.27));
+
+            if (isHoodAtPosition()) {
+                shooterHood.set(0);
+            } else if (hoodEncoder.getAbsolutePosition().getValueAsDouble() > 0.28) {
+                shooterHood.set(-0.1);
+            } else {
+                shooterHood.set(0.1);
+            }
         }
 
         double rps = rpm / 60.0;
@@ -168,7 +175,7 @@ public class ShooterSub extends SubsystemBase {
             return getHoodLimitSwitch(); // Ready if switch is pressed
         }
         // Ready if within 0.01 rotations of 0.27
-        return Math.abs(shooterHood.getPosition().getValueAsDouble() - 0.27) < 0.02;
+        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.27) < 0.01;
     }
 
     public boolean isShooterReady(double targetRPS) {
