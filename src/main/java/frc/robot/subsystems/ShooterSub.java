@@ -6,12 +6,15 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 public class ShooterSub extends SubsystemBase {
@@ -33,13 +36,15 @@ public class ShooterSub extends SubsystemBase {
     private final MotionMagicVoltage hoodRequest = new MotionMagicVoltage(0);
     private final VelocityVoltage m_velocityRequest = new VelocityVoltage(0);
     private final VoltageOut m_voltageRequest = new VoltageOut(0);
-
-    private double m_activeHoodTarget = 0.0;
     
     // Simplified Zone Tracking
     private boolean m_isFarZone = false; 
     private final double ZONE_THRESHOLD = 65.0;
     private final double HYSTERESIS = 2.0;
+
+    DigitalInput limitSwitch;
+
+    private double m_currentShooterTargetRPS = 0.0;
 
     public ShooterSub() {
         leftShooter = new TalonFX(11);
@@ -92,6 +97,8 @@ public class ShooterSub extends SubsystemBase {
 
         
         shooterHood.getConfigurator().apply(hoodConfig);
+
+        limitSwitch = new DigitalInput(9);
     }
 
     public void moveShooterHood(double power) {
@@ -117,41 +124,51 @@ public class ShooterSub extends SubsystemBase {
         feederBottomAndMiddle.setControl(m_voltageRequest.withOutput(0));
     }
 
-    public void setHoodPosition(double targetRotations) {
-        // Busy-guard: only update if the target is actually different
-        if (targetRotations != m_activeHoodTarget) {
-            m_activeHoodTarget = targetRotations;
-            shooterHood.setControl(hoodRequest.withPosition(targetRotations));
-        }
-    }
+    private final VoltageOut m_homingRequest = new VoltageOut(0);
+    private final MotionMagicVoltage m_mmRequest = new MotionMagicVoltage(0);
 
-    public boolean isHoodAtPosition() {
-        return Math.abs(shooterHood.getPosition().getValueAsDouble() - m_activeHoodTarget) < 0.01;
-    }
+    private double m_activeHoodTarget = 0.0;
+    private boolean m_isHoming = false;
 
-    /** * Core logic: Updates hood position and returns target RPS.
-     * Uses a 2-inch hysteresis gap around the 65-inch mark.
-     */
     public double calculateTargetRPS(double distance) {
-        // Hysteresis Logic
-        if (!m_isFarZone && distance > (ZONE_THRESHOLD + HYSTERESIS)) {
+        double threshold = 90.4;
+        double gap = 3.0; 
+
+        if (!m_isFarZone && distance > (threshold + gap)) {
             m_isFarZone = true;
-        } else if (m_isFarZone && distance < (ZONE_THRESHOLD - HYSTERESIS)) {
+        } else if (m_isFarZone && distance < (threshold - gap)) {
             m_isFarZone = false;
         }
 
-        double rps;
+        double rpm;
         if (!m_isFarZone) {
-            // STANDARD ZONE: y = 0.23x + 40.4
-            rps = (0.23 * distance) + 40.4;
-            // setHoodPosition(0.01); 
+            rpm = (13.75 * distance) + 2000;
+            m_activeHoodTarget = 0.0; // Standardize 0.0 as the "Bottom" target
+        
+            if (!getHoodLimitSwitch()) { 
+                shooterHood.setControl(m_homingRequest.withOutput(-1.5));
+            } else {
+                shooterHood.setControl(m_homingRequest.withOutput(0));
+                shooterHood.setPosition(0);
+                hoodEncoder.setPosition(0);
+            }
         } else {
-            // FAR ZONE: placeholder slope
-            rps = (0.15 * distance) + 55.0; 
-            // setHoodPosition(0.095); 
+            rpm = (12.25 * distance) + 1750;
+            m_activeHoodTarget = 0.27; // Update target for the far zone
+            shooterHood.setControl(m_mmRequest.withPosition(0.27));
         }
 
-        return MathUtil.clamp(rps, 45.0, 100.0);
+        double rps = rpm / 60.0;
+        this.m_currentShooterTargetRPS = rps; 
+        return rps;
+    }
+
+    public boolean isHoodAtPosition() {
+        if (!m_isFarZone) {
+            return getHoodLimitSwitch(); // Ready if switch is pressed
+        }
+        // Ready if within 0.01 rotations of 0.27
+        return Math.abs(shooterHood.getPosition().getValueAsDouble() - 0.27) < 0.02;
     }
 
     public boolean isShooterReady(double targetRPS) {
@@ -169,6 +186,14 @@ public class ShooterSub extends SubsystemBase {
         leftShooter.setControl(m_voltageRequest.withOutput(-6));
         middleShooter.setControl(m_voltageRequest.withOutput(-6));
         rightShooter.setControl(m_voltageRequest.withOutput(-6));
+    }
+
+    public boolean getHoodLimitSwitch() {
+        return limitSwitch.get();
+    }
+
+    public void zeroHoodEncoder() {
+        hoodEncoder.setPosition(0);
     }
 
     @Override

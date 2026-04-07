@@ -42,7 +42,7 @@ public class FeedAndShoot extends Command {
         m_turnPid.reset();
         double distance = Robot.cameraSub.getDistance3d(drivetrain);
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
-        // Robot.shooterSub.runShooter(m_targetRPS * 60);
+        Robot.shooterSub.runShooter(m_targetRPS * 60);
         m_startTime = Timer.getFPGATimestamp();
         toSpeed = false;
     }
@@ -63,7 +63,7 @@ public class FeedAndShoot extends Command {
         double distance = Robot.cameraSub.getDistance3d(drivetrain);
         System.out.println("DISTANCE: " + distance);
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
-        // Robot.shooterSub.runShooter(m_targetRPS * 60);
+        Robot.shooterSub.runShooter(m_targetRPS * 60);
 
         var currentPose = drivetrain.getState().Pose;
         
@@ -76,9 +76,9 @@ public class FeedAndShoot extends Command {
         boolean isAimed = m_turnPid.atSetpoint();
 
         // Apply rotation to Swerve
-        drivetrain.setControl(request.withRotationalRate(rotationOutput * 2.0));
+        drivetrain.setControl(request.withRotationalRate(rotationOutput * 3.0));
 
-        // 3. SHOOTER SPEED LATCH
+        // 3. SHOOTER SPEED LATCH and get wrist agitation speed
         double time = Timer.getFPGATimestamp() - m_startTime;
         double wristSpeed = Math.sin(time * 2 * Math.PI * 1.5) * 0.3;
         boolean shooterReady = Robot.shooterSub.isShooterReady(m_targetRPS); 
@@ -87,15 +87,15 @@ public class FeedAndShoot extends Command {
         }
 
         // 4. FINAL READINESS CHECK
-        boolean hoodReady = true; 
+        boolean hoodReady = Robot.shooterSub.isHoodAtPosition(); 
         boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
 
         // 5. FEEDER CONTROL
         if (readyToFire) {
-            // Robot.shooterSub.runProgressiveFeeders(m_targetRPS);
-            // Robot.intakeSub.setIntakePower(1);
-            // Robot.intakeSub.setHopperPower(1);
-            // Robot.intakeSub.setWristPower(wristSpeed);
+            Robot.shooterSub.runProgressiveFeeders(m_targetRPS);
+            Robot.intakeSub.setIntakePower(1);
+            Robot.intakeSub.setHopperPower(1);
+            Robot.intakeSub.setWristPower(wristSpeed);
         } else {
             Robot.shooterSub.stopFeeders();
             Robot.intakeSub.setHopperPower(0);

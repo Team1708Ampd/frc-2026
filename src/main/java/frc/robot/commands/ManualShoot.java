@@ -10,6 +10,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ManualShoot extends Command {
@@ -21,17 +22,20 @@ public class ManualShoot extends Command {
   private boolean toSpeed = false;
   private int atSpeed = 0;
 
+  CommandSwerveDrivetrain drivetrain;
+
   /** Creates a new ManualShoot. */
-  public ManualShoot(DoubleSupplier power) {
+  public ManualShoot(DoubleSupplier power, CommandSwerveDrivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.power = power;
+    this.drivetrain = drivetrain;
     addRequirements(Robot.shooterSub, Robot.cameraSub);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("DISTANCE: " + Robot.cameraSub.getDistance());
+    System.out.println("DISTANCE: " + Robot.cameraSub.getDistance3d(drivetrain));
     System.out.println("POWER: " + power.getAsDouble());
     m_startTime = Timer.getFPGATimestamp();
     atSpeed = 0;
@@ -41,16 +45,16 @@ public class ManualShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("DISTANCE: " + Robot.cameraSub.getDistance());
+    System.out.println("DISTANCE: " + Robot.cameraSub.getDistance3d(drivetrain));
     System.out.println("POWER: " + power.getAsDouble());
     Robot.shooterSub.runShooter(power.getAsDouble());
     boolean shooterReady = Robot.shooterSub.isShooterReady(power.getAsDouble() / 60);     
     
     double time = Timer.getFPGATimestamp() - m_startTime;
     double frequency = 2.0; // Oscillations per second
-    double speed = Math.sin(time * 2 * Math.PI * frequency) * 0.4;
+    double speed = Math.sin(time * 2 * Math.PI * frequency) * 0.35;
 
-    if (!toSpeed || atSpeed < 3) {
+    if (!toSpeed || atSpeed < 25) {
       toSpeed = shooterReady;
       if (toSpeed) {
         atSpeed++;

@@ -71,7 +71,7 @@ public class RobotContainer {
 
     private final AprilTagFieldLayout m_fieldLayout;
 
-    private double shootPower = 3000;
+    private double shootPower = 3225;
     
 // AUTO RELATED VARIABLES AND DEFS
     private SendableChooser<Command> autoChooser;
@@ -109,7 +109,7 @@ public class RobotContainer {
         ));
         
         joystick.a().whileTrue(new FeedAndShoot(drivetrain));
-        joystick.x().whileTrue(new ManualShoot(() -> shootPower));
+        joystick.x().whileTrue(new ManualShoot(() -> shootPower, drivetrain));
 
         joystick.leftTrigger().whileTrue(new Intake());
         joystick.rightTrigger().whileTrue(new Outtake());
@@ -118,11 +118,11 @@ public class RobotContainer {
         joystick.povDown().onTrue(new InstantCommand(this::decrementShoot));
         joystick.povUp().onTrue(new InstantCommand(this::incrementShoot));
 
-        joystick.back().whileTrue(new ShooterHoodDown());
+        joystick.back().onTrue(new ShooterHoodDown());
         joystick.start().whileTrue(new ShooterHoodUp());
  
-        joystick.povUp().whileTrue(new IntakeWristIn());
-        joystick.povDown().whileTrue(new IntakeWristOut());
+        // joystick.povUp().whileTrue(new IntakeWristIn());
+        // joystick.povDown().whileTrue(new IntakeWristOut());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
