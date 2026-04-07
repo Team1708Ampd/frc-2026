@@ -115,14 +115,11 @@ public class RobotContainer {
         joystick.rightTrigger().whileTrue(new Outtake());
         joystick.rightBumper().whileTrue(new OuttakeAll());
 
-        joystick.povDown().onTrue(new InstantCommand(this::decrementShoot));
-        joystick.povUp().onTrue(new InstantCommand(this::incrementShoot));
-
         joystick.back().onTrue(new ShooterHoodDown());
         joystick.start().whileTrue(new ShooterHoodUp());
  
-        // joystick.povUp().whileTrue(new IntakeWristIn());
-        // joystick.povDown().whileTrue(new IntakeWristOut());
+        joystick.povUp().whileTrue(new IntakeWristIn());
+        joystick.povDown().whileTrue(new IntakeWristOut());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
