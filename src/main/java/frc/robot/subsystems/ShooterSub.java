@@ -146,9 +146,9 @@ public class ShooterSub extends SubsystemBase {
             m_activeHoodTarget = 0.0; // Standardize 0.0 as the "Bottom" target
         
             if (!getHoodLimitSwitch()) { 
-                shooterHood.setControl(m_homingRequest.withOutput(-1.5));
+                shooterHood.set(-0.1);
             } else {
-                shooterHood.setControl(m_homingRequest.withOutput(0));
+                shooterHood.set(0);
                 shooterHood.setPosition(0);
                 hoodEncoder.setPosition(0);
             }
