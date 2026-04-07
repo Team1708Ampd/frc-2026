@@ -111,8 +111,8 @@ public class RobotContainer {
         joystick.a().whileTrue(new FeedAndShoot(drivetrain));
         joystick.x().whileTrue(new ManualShoot(() -> shootPower, drivetrain));
 
-        joystick.leftTrigger().whileTrue(new Intake());
-        joystick.rightTrigger().whileTrue(new Outtake());
+        joystick.rightTrigger().whileTrue(new Intake());
+        joystick.leftTrigger().whileTrue(new Outtake());
         joystick.rightBumper().whileTrue(new OuttakeAll());
 
         joystick.back().onTrue(new ShooterHoodDown());
