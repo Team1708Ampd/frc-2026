@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         LimelightHelpers.SetIMUMode("limelight", 4);
+        Robot.shooterSub.zeroHoodEncoder();
     }
 
     @Override
