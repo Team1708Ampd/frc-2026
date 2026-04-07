@@ -162,7 +162,7 @@ public class ShooterSub extends SubsystemBase {
             if (isHoodAtPosition()) {
                 shooterHood.set(0);
                 System.out.println("STOPPED HOOD");
-            } else if (hoodEncoder.getAbsolutePosition().getValueAsDouble() > 0.32) {
+            } else if (hoodEncoder.getAbsolutePosition().getValueAsDouble() > 0.27) {
                 System.out.println("MOVE HOOD DOWN: " + hoodEncoder.getAbsolutePosition().getValueAsDouble());
                 shooterHood.set(-0.1);
             } else {
@@ -181,7 +181,7 @@ public class ShooterSub extends SubsystemBase {
             return getHoodLimitSwitch(); // Ready if switch is pressed
         }
         // Ready if within 0.01 rotations of 0.27
-        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.27) < 0.05;
+        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.25) < 0.02;
     }
 
     public boolean isShooterReady(double targetRPS) {
