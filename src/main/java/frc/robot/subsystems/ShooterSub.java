@@ -164,9 +164,9 @@ public class ShooterSub extends SubsystemBase {
                 System.out.println("STOPPED HOOD");
             } else if (hoodEncoder.getAbsolutePosition().getValueAsDouble() > 0.27) {
                 System.out.println("MOVE HOOD DOWN: " + hoodEncoder.getAbsolutePosition().getValueAsDouble());
-                shooterHood.set(-0.1);
+                shooterHood.set(-0.07);
             } else {
-                shooterHood.set(0.1);
+                shooterHood.set(0.07);
                 System.out.println("MOVE HOOD UP: " + hoodEncoder.getAbsolutePosition().getValueAsDouble());
             }
         }
