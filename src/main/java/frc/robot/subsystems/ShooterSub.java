@@ -156,18 +156,22 @@ public class ShooterSub extends SubsystemBase {
                 System.out.println("STOPPED HOOD");
             }
         } else {
-            rpm = (12.25 * distance) + 1750;
-            m_activeHoodTarget = 0.27; // Update target for the far zone
+           rpm = (12.25 * distance) + 1750;
+        m_activeHoodTarget = 0.27;
+        double currentPos = hoodEncoder.getAbsolutePosition().getValueAsDouble();
 
-            if (isHoodAtPosition()) {
+        // Use a "Deadband" of 0.01 to prevent jittering
+            if (Math.abs(currentPos - 0.27) < 0.01) {
                 shooterHood.set(0);
-                System.out.println("STOPPED HOOD");
-            } else if (hoodEncoder.getAbsolutePosition().getValueAsDouble() > 0.27) {
-                System.out.println("MOVE HOOD DOWN: " + hoodEncoder.getAbsolutePosition().getValueAsDouble());
+                System.out.println("FAR POSITION: AT TARGET");
+            } else if (currentPos > 0.27) {
+                // Need to go DOWN
                 shooterHood.set(-0.07);
+                System.out.println("FAR POSITION: MOVING DOWN TO 0.27");
             } else {
+                // Need to go UP
                 shooterHood.set(0.07);
-                System.out.println("MOVE HOOD UP: " + hoodEncoder.getAbsolutePosition().getValueAsDouble());
+                System.out.println("FAR POSITION: MOVING UP TO 0.27");
             }
         }
 
@@ -181,6 +185,7 @@ public class ShooterSub extends SubsystemBase {
             return getHoodLimitSwitch(); // Ready if switch is pressed
         }
         // Ready if within 0.01 rotations of 0.27
+        System.out.println("AT POSITION?" + (Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.25) < 0.02));
         return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.25) < 0.02;
     }
 

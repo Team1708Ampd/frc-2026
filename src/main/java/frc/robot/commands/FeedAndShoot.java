@@ -87,7 +87,7 @@ public class FeedAndShoot extends Command {
         }
 
         // 4. FINAL READINESS CHECK
-        boolean hoodReady = Robot.shooterSub.isHoodAtPosition(); 
+        boolean hoodReady = true; 
         boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
 
         // 5. FEEDER CONTROL
