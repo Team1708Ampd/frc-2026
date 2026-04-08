@@ -50,14 +50,14 @@ public class FeedAndShoot extends Command {
     @Override
     public void execute() {
         LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-        if (mt1 == null || mt1.tagCount == 0) {
-            drivetrain.setControl(request.withRotationalRate(0));
-            Robot.shooterSub.stopFeeders();
-            Robot.intakeSub.setHopperPower(0);
-            Robot.intakeSub.setIntakePower(0);
-            Robot.intakeSub.setWristPower(0);
-            return;
-        }
+        // if (mt1 == null || mt1.tagCount == 0) {
+        //     drivetrain.setControl(request.withRotationalRate(0));
+        //     Robot.shooterSub.stopFeeders();
+        //     Robot.intakeSub.setHopperPower(0);
+        //     Robot.intakeSub.setIntakePower(0);
+        //     Robot.intakeSub.setWristPower(0);
+        //     return;
+        // }
 
         // 1. UPDATE TARGETS & SHOOTER
         double distance = Robot.cameraSub.getDistance3d(drivetrain);
@@ -88,7 +88,7 @@ public class FeedAndShoot extends Command {
 
         // 4. FINAL READINESS CHECK
         boolean hoodReady = true; 
-        boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
+        boolean readyToFire = m_aimDebouncer.calculate(isAimed);
 
         // 5. FEEDER CONTROL
         if (readyToFire) {
