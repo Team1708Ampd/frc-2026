@@ -214,6 +214,18 @@ public class ShooterSub extends SubsystemBase {
         hoodEncoder.setPosition(0);
     }
 
+    public void setHoodToPass() {
+        double currentPos = hoodEncoder.getAbsolutePosition().getValueAsDouble();
+
+        if (Math.abs(currentPos - 0.38) < 0.02) {
+            shooterHood.set(0);
+        } else if (currentPos > 0.38) {
+            shooterHood.set(-0.07);
+        } else {
+            shooterHood.set(0.07);
+        }
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter/Hood Target", m_activeHoodTarget);

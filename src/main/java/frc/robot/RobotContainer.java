@@ -44,6 +44,7 @@ import frc.robot.commands.IntakeWristOut;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.OuttakeAll;
+import frc.robot.commands.PassCommand;
 import frc.robot.commands.ShooterHoodDown;
 import frc.robot.commands.ShooterHoodUp;
 import frc.robot.generated.TunerConstants;
@@ -110,6 +111,7 @@ public class RobotContainer {
         
         joystick.a().whileTrue(new FeedAndShoot(drivetrain));
         // joystick.x().whileTrue(new ManualShoot(() -> shootPower, drivetrain));
+        joystick.b().whileTrue(new PassCommand());
 
         joystick.rightTrigger().whileTrue(new Intake());
         joystick.leftTrigger().whileTrue(new Outtake());
