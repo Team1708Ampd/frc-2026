@@ -88,21 +88,21 @@ public class FeedAndShoot extends Command {
 
         // 4. FINAL READINESS CHECK
         boolean hoodReady = true; 
-        // boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
-        boolean readyToFire = true;
+        boolean readyToFire = m_aimDebouncer.calculate(toSpeed);
+        // boolean readyToFire = true;
 
         // 5. FEEDER CONTROL
-        // if (readyToFire) {
+        if (readyToFire) {
             Robot.shooterSub.runProgressiveFeeders(m_targetRPS);
             Robot.intakeSub.setIntakePower(1);
             Robot.intakeSub.setHopperPower(1);
             Robot.intakeSub.setWristPower(wristSpeed);
-        // } else {
-        //     Robot.shooterSub.stopFeeders();
-        //     Robot.intakeSub.setHopperPower(0);
-        //     Robot.intakeSub.setIntakePower(0);
-        //     Robot.intakeSub.setWristPower(0);
-        // }
+        } else {
+            Robot.shooterSub.stopFeeders();
+            Robot.intakeSub.setHopperPower(0);
+            Robot.intakeSub.setIntakePower(0);
+            Robot.intakeSub.setWristPower(0);
+        }
     }
 
     @Override

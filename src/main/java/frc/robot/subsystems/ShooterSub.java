@@ -190,7 +190,7 @@ public class ShooterSub extends SubsystemBase {
     }
 
     public boolean isShooterReady(double targetRPS) {
-        double tolerance = 3.0; 
+        double tolerance = 5.0; 
         boolean leftReady = Math.abs(leftShooter.getVelocity().getValueAsDouble() - targetRPS) < tolerance;
         boolean rightReady = Math.abs(rightShooter.getVelocity().getValueAsDouble() - targetRPS) < tolerance;
         boolean centerReady = Math.abs(middleShooter.getVelocity().getValueAsDouble() - targetRPS) < tolerance;
