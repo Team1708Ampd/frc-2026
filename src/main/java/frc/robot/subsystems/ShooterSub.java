@@ -161,7 +161,7 @@ public class ShooterSub extends SubsystemBase {
         double currentPos = hoodEncoder.getAbsolutePosition().getValueAsDouble();
 
         // Use a "Deadband" of 0.01 to prevent jittering
-            if (Math.abs(currentPos - 0.27) < 0.01) {
+            if (Math.abs(currentPos - 0.27) < 0.02) {
                 shooterHood.set(0);
                 System.out.println("FAR POSITION: AT TARGET");
             } else if (currentPos > 0.27) {
@@ -186,7 +186,7 @@ public class ShooterSub extends SubsystemBase {
         }
         // Ready if within 0.01 rotations of 0.27
         System.out.println("AT POSITION?" + (Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.25) < 0.02));
-        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.25) < 0.02;
+        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.27) < 0.02;
     }
 
     public boolean isShooterReady(double targetRPS) {
