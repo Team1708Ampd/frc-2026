@@ -88,7 +88,8 @@ public class FeedAndShoot extends Command {
 
         // 4. FINAL READINESS CHECK
         boolean hoodReady = true; 
-        boolean readyToFire = m_aimDebouncer.calculate(isAimed);
+        // boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
+        boolean readyToFire = true;
 
         // 5. FEEDER CONTROL
         if (readyToFire) {
