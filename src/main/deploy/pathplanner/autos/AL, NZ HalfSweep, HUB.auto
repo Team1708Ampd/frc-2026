@@ -77,7 +77,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ManualShoot"
+            "name": "CalculatedShoot"
           }
         }
       ]

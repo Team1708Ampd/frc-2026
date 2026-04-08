@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -14,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ClimberSub;
+import frc.robot.subsystems.CameraSub;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
@@ -42,13 +43,13 @@ public class Robot extends TimedRobot {
 
     public static ShooterSub shooterSub;
     public static IntakeSub intakeSub;
-    public static ClimberSub climberSub;
+    public static CameraSub cameraSub;
 
 
     public Robot() {
         shooterSub = new ShooterSub();
         intakeSub = new IntakeSub();
-        climberSub = new ClimberSub();
+        cameraSub = new CameraSub();
         m_robotContainer = new RobotContainer();
     }
 
@@ -93,11 +94,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        // targetOffsetAngle_Vertical = limelight.getEntry("ty").getDouble(0);
-        // double angleToGoalDegrees = constants.LIMELIGHT_ANGLE + targetOffsetAngle_Vertical;
-        // double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-        // double distanceFromLimelightToGoalInches = (constants.LADDER_TAG_HEIGHT - constants.LIMELIGHT_HEIGHT) / Math.tan(angleToGoalRadians);
-        // System.out.println("DISTANCE: " + distanceFromLimelightToGoalInches);
     }
 
     @Override

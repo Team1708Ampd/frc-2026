@@ -6,42 +6,69 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.HootAutoReplay;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CameraSub;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IntakeSub;
+import frc.robot.subsystems.ShooterSub;
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSub extends SubsystemBase {
   /** Creates a new IntakeSub. */
   
-  TalonFX intakeMotor;
+  //TalonFX intakeMotor;
+  TalonFX intakeMotor2;
   TalonFX hopperMotor;
   TalonFX feederMotor;
   TalonFX wristMotor; //
+  
 
   public IntakeSub() {
-    intakeMotor = new TalonFX(12);
+    //intakeMotor = new TalonFX(12);
+    intakeMotor2 = new TalonFX(20);
     hopperMotor = new TalonFX(13);
     feederMotor = new TalonFX(8);
     wristMotor = new TalonFX(10);
+    
+
     
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Voltage.PeakForwardVoltage = 10.0;
     config.Voltage.PeakReverseVoltage = -10.0;
 
-    intakeMotor.getConfigurator().apply(config);
+    //intakeMotor.getConfigurator().apply(config);
+    intakeMotor2.getConfigurator().apply(config);
+
     hopperMotor.getConfigurator().apply(config);
     feederMotor.getConfigurator().apply(config);
     wristMotor.getConfigurator().apply(config);
   }
 
   public void setAllIntakes(double power) {
-    intakeMotor.set(power);
+    //intakeMotor.set(-power);
+    intakeMotor2.set(power);
     hopperMotor.set(power);
     feederMotor.set(power);
   }
 
   public void setIntakePower(double power) {
-    intakeMotor.set(power);
+    // intakeMotor.set(-power);
+    intakeMotor2.set(power);
   }
 
   public void setHopperPower(double power) {
