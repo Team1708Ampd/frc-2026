@@ -166,7 +166,7 @@ public class ShooterSub extends SubsystemBase {
     }
 
     public boolean isHoodAtPosition(double pos) {
-        return Math.abs(hoodEncoder.getPosition().getValueAsDouble() - pos) < 2;
+        return Math.abs(hoodEncoder.getPosition().getValueAsDouble() - pos) < .02;
     }
 
     public void setHoodToZero() {
