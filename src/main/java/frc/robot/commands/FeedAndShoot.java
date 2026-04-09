@@ -18,8 +18,6 @@ public class FeedAndShoot extends Command {
     private final SwerveRequest.RobotCentric request = new SwerveRequest.RobotCentric();
     
     private final PIDController m_turnPid = new PIDController(0.04, 0.0, 0.002);
-    private final Debouncer m_aimDebouncer = new Debouncer(0.05, Debouncer.DebounceType.kBoth);
-    private final Debouncer m_speedDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kRising);
 
     // GOAL COORDINATES (Meters)
     private final Translation2d BLUE_GOAL = Constants.BLUE_GOAL_CENTER;
@@ -27,7 +25,8 @@ public class FeedAndShoot extends Command {
 
     private double m_startTime;
     private double m_targetRPS;
-    private boolean toSpeed = false;
+
+    private double initialDelay = 0;
 
     public FeedAndShoot(CommandSwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
@@ -44,7 +43,6 @@ public class FeedAndShoot extends Command {
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
         Robot.shooterSub.runShooter(m_targetRPS * 60);
         m_startTime = Timer.getFPGATimestamp();
-        toSpeed = false;
     }
 
     @Override
@@ -61,7 +59,6 @@ public class FeedAndShoot extends Command {
 
         // 1. UPDATE TARGETS & SHOOTER
         double distance = Robot.cameraSub.getDistance3d(drivetrain);
-        System.out.println("DISTANCE: " + distance);
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
         Robot.shooterSub.runShooter(m_targetRPS * 60);
 
@@ -73,7 +70,6 @@ public class FeedAndShoot extends Command {
             currentPose.getRotation().getDegrees(),
             targetHeading.getDegrees()
         );
-        boolean isAimed = m_turnPid.atSetpoint();
 
         // Apply rotation to Swerve
         drivetrain.setControl(request.withRotationalRate(rotationOutput * 3.0));
@@ -81,28 +77,23 @@ public class FeedAndShoot extends Command {
         // 3. SHOOTER SPEED LATCH and get wrist agitation speed
         double time = Timer.getFPGATimestamp() - m_startTime;
         double wristSpeed = Math.sin(time * 2 * Math.PI * 1.5) * 0.3;
-        boolean shooterReady = Robot.shooterSub.isShooterReady(m_targetRPS); 
-        if (!toSpeed) {
-            toSpeed = m_speedDebouncer.calculate(shooterReady);
+
+        if(initialDelay < 12) {
+            initialDelay++;
         }
 
-        // 4. FINAL READINESS CHECK
-        boolean hoodReady = true; 
-        // boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
-        boolean readyToFire = true;
-
         // 5. FEEDER CONTROL
-        // if (readyToFire) {
+        if (initialDelay >= 12) {
             Robot.shooterSub.runProgressiveFeeders(m_targetRPS);
             Robot.intakeSub.setIntakePower(1);
             Robot.intakeSub.setHopperPower(1);
             Robot.intakeSub.setWristPower(wristSpeed);
-        // } else {
-        //     Robot.shooterSub.stopFeeders();
-        //     Robot.intakeSub.setHopperPower(0);
-        //     Robot.intakeSub.setIntakePower(0);
-        //     Robot.intakeSub.setWristPower(0);
-        // }
+        } else {
+            Robot.shooterSub.stopFeeders();
+            Robot.intakeSub.setHopperPower(0);
+            Robot.intakeSub.setIntakePower(0);
+            Robot.intakeSub.setWristPower(0);
+        }
     }
 
     @Override

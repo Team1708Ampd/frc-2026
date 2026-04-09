@@ -144,16 +144,13 @@ public class ShooterSub extends SubsystemBase {
         if (!m_isFarZone) {
             rpm = (13.75 * distance) + 2000;
             m_activeHoodTarget = 0.0; // Standardize 0.0 as the "Bottom" target
-            System.out.println("CLOSE SHOT");
         
             if (!getHoodLimitSwitch()) { 
                 shooterHood.set(-0.1);
-                System.out.println("MOVE HOOD DOWN");
             } else {
                 shooterHood.set(0);
                 shooterHood.setPosition(0);
                 hoodEncoder.setPosition(0);
-                System.out.println("STOPPED HOOD");
             }
         } else {
            rpm = (12.25 * distance) + 1750;
@@ -161,32 +158,20 @@ public class ShooterSub extends SubsystemBase {
         double currentPos = hoodEncoder.getAbsolutePosition().getValueAsDouble();
 
         // Use a "Deadband" of 0.01 to prevent jittering
-            if (Math.abs(currentPos - 0.27) < 0.01) {
+            if (Math.abs(currentPos - 0.27) < 0.02) {
                 shooterHood.set(0);
-                System.out.println("FAR POSITION: AT TARGET");
             } else if (currentPos > 0.27) {
                 // Need to go DOWN
                 shooterHood.set(-0.07);
-                System.out.println("FAR POSITION: MOVING DOWN TO 0.27");
             } else {
                 // Need to go UP
                 shooterHood.set(0.07);
-                System.out.println("FAR POSITION: MOVING UP TO 0.27");
             }
         }
 
         double rps = rpm / 60.0;
         this.m_currentShooterTargetRPS = rps; 
         return rps;
-    }
-
-    public boolean isHoodAtPosition() {
-        if (!m_isFarZone) {
-            return getHoodLimitSwitch(); // Ready if switch is pressed
-        }
-        // Ready if within 0.01 rotations of 0.27
-        System.out.println("AT POSITION?" + (Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.25) < 0.02));
-        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.25) < 0.02;
     }
 
     public boolean isShooterReady(double targetRPS) {
