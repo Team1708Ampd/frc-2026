@@ -57,7 +57,6 @@ public class FeedAndShoot extends Command {
         //     return;
         // }
 
-        // 1. UPDATE TARGETS & SHOOTER
         double distance = Robot.cameraSub.getDistance3d(drivetrain);
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
         Robot.shooterSub.runShooter(m_targetRPS * 60);
