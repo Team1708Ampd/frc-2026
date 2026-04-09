@@ -2,8 +2,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -20,17 +23,21 @@ public class FeedAndShoot extends Command {
     private double m_targetRPS;
     private boolean toSpeed = false;
 
+    private final Translation2d BLUE_GOAL = Constants.BLUE_GOAL_CENTER;
+    private final Translation2d RED_GOAL = Constants.RED_GOAL_CENTER;
+
     public FeedAndShoot(CommandSwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
         addRequirements(Robot.shooterSub, Robot.cameraSub, drivetrain);
         // Tolerance in degrees
         m_turnPid.setTolerance(2.0); 
+        m_turnPid.enableContinuousInput(-180, 180);
     }
 
     @Override
     public void initialize() {
         m_turnPid.reset();
-        double distance = Robot.cameraSub.getDistance();
+        double distance = Robot.cameraSub.getDistance3d(drivetrain);
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
         Robot.shooterSub.runShooter(m_targetRPS * 60);
         m_startTime = Timer.getFPGATimestamp();
@@ -40,31 +47,27 @@ public class FeedAndShoot extends Command {
     @Override
     public void execute() {
         // 1. UPDATE TARGETS & SHOOTER
-        double distance = Robot.cameraSub.getDistance();
+        double distance = Robot.cameraSub.getDistance3d(drivetrain);
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
         Robot.shooterSub.runShooter(m_targetRPS * 60);
 
         // 2. AUTO-ALIGN DRIVETRAIN
-        boolean hasTarget = Robot.cameraSub.hasTarget();
-        boolean isAimed = false;
+        var currentPose = drivetrain.getState().Pose;
+        
+        Rotation2d targetHeading = Robot.cameraSub.getAngleToGoal(drivetrain);
 
         // Visual feedback/wrist oscillation logic
-        double time = Timer.getFPGATimestamp() - m_startTime;
-        double wristSpeed = Math.sin(time * 2 * Math.PI * 1.5) * 0.3;
+        double rotationOutput = m_turnPid.calculate(
+            currentPose.getRotation().getDegrees(),
+            targetHeading.getDegrees()
+        );
+        boolean isAimed = m_turnPid.atSetpoint();
 
-        if (hasTarget) {
-            // Using the corrected TX from CameraSub
-            double tx = Robot.cameraSub.getTX();
-            double rotationOutput = m_turnPid.calculate(tx, 0);
-            isAimed = m_turnPid.atSetpoint();
-            
-            // Multiply by 5.0 for rotation rate intensity
-            drivetrain.setControl(request.withRotationalRate(rotationOutput * 5.0)); 
-        } else {
-            drivetrain.setControl(request.withRotationalRate(0));
-        }
+        drivetrain.setControl(request.withRotationalRate(rotationOutput * 2.0));
 
         // 3. SHOOTER SPEED LATCH
+        double time = Timer.getFPGATimestamp() - m_startTime;
+        double wristSpeed = Math.sin(time * 2 * Math.PI * 1.5) * 0.3;
         boolean shooterReady = Robot.shooterSub.isShooterReady(m_targetRPS); 
         if (!toSpeed) {
             toSpeed = m_speedDebouncer.calculate(shooterReady);
@@ -72,7 +75,8 @@ public class FeedAndShoot extends Command {
 
         // 4. FINAL READINESS CHECK
         boolean hoodReady = true; 
-        boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
+        // boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
+        boolean readyToFire = true;
 
         // 5. FEEDER CONTROL
         if (readyToFire) {
