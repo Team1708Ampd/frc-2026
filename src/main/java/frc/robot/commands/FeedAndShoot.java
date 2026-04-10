@@ -21,7 +21,7 @@ public class FeedAndShoot extends Command {
 
     private double m_startTime;
     private double m_targetRPS;
-    private boolean toSpeed = false;
+    private double start = 0;
 
     private final Translation2d BLUE_GOAL = Constants.BLUE_GOAL_CENTER;
     private final Translation2d RED_GOAL = Constants.RED_GOAL_CENTER;
@@ -41,7 +41,6 @@ public class FeedAndShoot extends Command {
         m_targetRPS = Robot.shooterSub.calculateTargetRPS(distance);
         Robot.shooterSub.runShooter(m_targetRPS * 60);
         m_startTime = Timer.getFPGATimestamp();
-        toSpeed = false;
     }
 
     @Override
@@ -68,18 +67,19 @@ public class FeedAndShoot extends Command {
         // 3. SHOOTER SPEED LATCH
         double time = Timer.getFPGATimestamp() - m_startTime;
         double wristSpeed = Math.sin(time * 2 * Math.PI * 1.5) * 0.3;
-        boolean shooterReady = Robot.shooterSub.isShooterReady(m_targetRPS); 
-        if (!toSpeed) {
-            toSpeed = m_speedDebouncer.calculate(shooterReady);
-        }
+        
 
         // 4. FINAL READINESS CHECK
         boolean hoodReady = true; 
         // boolean readyToFire = m_aimDebouncer.calculate(isAimed && toSpeed && hoodReady);
         boolean readyToFire = true;
 
+        if (start < 12) {
+            start++;
+        }
+
         // 5. FEEDER CONTROL
-        if (readyToFire) {
+        if (start >= 12) {
             Robot.shooterSub.runProgressiveFeeders(m_targetRPS);
             Robot.intakeSub.setIntakePower(1);
             Robot.intakeSub.setHopperPower(1);
