@@ -72,7 +72,7 @@ public class RobotContainer {
     private double shootPower = 3000;
     
 // AUTO RELATED VARIABLES AND DEFS
-    private SendableChooser<Command> autoChooser;
+    private SendableChooser<Command> autoSelect;
 
     public RobotContainer() {
         configureBindings();
@@ -81,9 +81,9 @@ public class RobotContainer {
         registerNamedCommands();
 
 
-        autoChooser = AutoBuilder.buildAutoChooser("AL, Outpost, Hub"); // Default auto will be `Commands.none()`
+        autoSelect = AutoBuilder.buildAutoChooser(""); // Default auto will be `Commands.none()`
         CommandScheduler.getInstance().schedule(getAutonomousCommand());
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        SmartDashboard.putData("Select Auto", autoSelect);
 
         // Register the commands for the autos
         // Schedule the selected auto
@@ -132,7 +132,7 @@ public class RobotContainer {
 
         public Command getAutonomousCommand()
     {
-        return autoChooser.getSelected();
+        return autoSelect.getSelected();
     }
 
 

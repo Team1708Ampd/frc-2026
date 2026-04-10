@@ -123,6 +123,8 @@ public class ShooterSub extends SubsystemBase {
     public double calculateTargetRPS(double distance) {
         boolean m_isFarZone = false;
 
+        System.out.println("CHECK DISTANCE: " + distance);
+
         // Hysteresis Logic
         if (distance > (ZONE_THRESHOLD + HYSTERESIS)) {
             m_isFarZone = true;
@@ -162,11 +164,11 @@ public class ShooterSub extends SubsystemBase {
     }
 
     public boolean isHoodAtBottom() {
-        return limitSwitch.get();
+        return !limitSwitch.get();
     }
 
     public boolean isHoodAtPosition(double pos) {
-        return Math.abs(hoodEncoder.getPosition().getValueAsDouble() - pos) < .02;
+        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - pos) < .02;
     }
 
     public void setHoodToZero() {
@@ -181,7 +183,7 @@ public class ShooterSub extends SubsystemBase {
     public void setHoodToPosition(double pos) {
         if(isHoodAtPosition(pos)) {
             shooterHood.set(0);
-        } else if (hoodEncoder.getPosition().getValueAsDouble() > pos) {
+        } else if (hoodEncoder.getAbsolutePosition().getValueAsDouble() > pos) {
             shooterHood.set(-0.05);
         } else {
             shooterHood.set(0.05);
