@@ -5,22 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 1.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeWristOut"
-                }
-              }
-            ]
+            "pathName": "Right Ramp to NZ to HUB"
           }
         },
         {
@@ -28,15 +15,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "wait",
                 "data": {
-                  "pathName": "AL to Depot"
+                  "waitTime": 5.0
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "CalculatedShoot"
                 }
               }
             ]
@@ -45,13 +32,26 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot to Hub"
+            "pathName": "Right NZ Scooper"
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "CalculatedShoot"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CalculatedShoot"
+                }
+              }
+            ]
           }
         }
       ]

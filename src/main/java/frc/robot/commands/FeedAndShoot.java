@@ -98,10 +98,10 @@ public class FeedAndShoot extends Command {
             Robot.intakeSub.setHopperPower(1);
             Robot.intakeSub.setWristPower(wristSpeed);
         // } else {
-            Robot.shooterSub.stopFeeders();
-            Robot.intakeSub.setHopperPower(0);
-            Robot.intakeSub.setIntakePower(0);
-            Robot.intakeSub.setWristPower(0);
+            // Robot.shooterSub.stopFeeders();
+            // Robot.intakeSub.setHopperPower(0);
+            // Robot.intakeSub.setIntakePower(0);
+            // Robot.intakeSub.setWristPower(0);
         // }
     }
 

@@ -84,7 +84,7 @@ public class RobotContainer {
         registerNamedCommands();
 
 
-        autoChooser = AutoBuilder.buildAutoChooser("AL, Outpost, Hub"); // Default auto will be `Commands.none()`
+        autoChooser = AutoBuilder.buildAutoChooser("One Step Forward"); // Default auto will be `Commands.none()`
         CommandScheduler.getInstance().schedule(getAutonomousCommand());
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
