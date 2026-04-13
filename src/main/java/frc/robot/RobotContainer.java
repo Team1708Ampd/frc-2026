@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.commands.BottomFeeder;
 import frc.robot.commands.FeedAndShoot;
 import frc.robot.commands.Intake;
 import frc.robot.commands.IntakeWristIn;
@@ -106,7 +107,7 @@ public class RobotContainer {
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.7) // Drive forward with negative Y (forward)
                     .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.7) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.9) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.95) // Drive counterclockwise with negative X (left)
         ));
         
         joystick.a().whileTrue(new FeedAndShoot(drivetrain));
@@ -122,6 +123,8 @@ public class RobotContainer {
  
         joystick.povUp().whileTrue(new IntakeWristIn());
         joystick.povDown().whileTrue(new IntakeWristOut());
+
+        joystick.y().whileTrue(new BottomFeeder());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

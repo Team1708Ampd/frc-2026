@@ -30,12 +30,16 @@ public class PassCommand extends Command {
     double time = Timer.getFPGATimestamp() - m_startTime;
     double wristSpeed = Math.sin(time * 2 * Math.PI * 1.5) * 0.3;
 
-    Robot.shooterSub.setHoodToPass();
-    Robot.shooterSub.runShooter(3500);
-    Robot.shooterSub.runProgressiveFeeders(3500 / 60);
-    Robot.intakeSub.setIntakePower(1);
-    Robot.intakeSub.setHopperPower(1);
-    Robot.intakeSub.setWristPower(wristSpeed);
+    
+    Robot.shooterSub.setHoodToPosition(0.465);
+    Robot.shooterSub.runShooter(3750);
+
+    if (Robot.shooterSub.isHoodAtPosition(0.465)) {
+        Robot.shooterSub.runProgressiveFeeders(3750 / 60);
+        Robot.intakeSub.setIntakePower(1);
+        Robot.intakeSub.setHopperPower(1);
+        Robot.intakeSub.setWristPower(wristSpeed);
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -46,6 +50,7 @@ public class PassCommand extends Command {
     Robot.intakeSub.setIntakePower(0);
     Robot.intakeSub.setHopperPower(0);
     Robot.intakeSub.setWristPower(0);
+    Robot.shooterSub.stopHoodMotor();
   }
 
   // Returns true when the command should end.

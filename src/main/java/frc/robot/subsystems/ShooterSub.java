@@ -38,9 +38,8 @@ public class ShooterSub extends SubsystemBase {
     private final VoltageOut m_voltageRequest = new VoltageOut(0);
     
     // Simplified Zone Tracking
-    private boolean m_isFarZone = false; 
-    private final double ZONE_THRESHOLD = 65.0;
-    private final double HYSTERESIS = 2.0;
+    private final double ZONE_THRESHOLD = 90.4;
+    private final double HYSTERESIS = 3.0;
 
     DigitalInput limitSwitch;
 
@@ -75,7 +74,7 @@ public class ShooterSub extends SubsystemBase {
 
         /* --- Feeder Configuration --- */
         TalonFXConfiguration feederConfig = new TalonFXConfiguration();
-        feederConfig.Voltage.PeakForwardVoltage = 11.0;
+        feederConfig.Voltage.PeakForwardVoltage = 11.5;
         feederConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
         feederConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         feederConfig.CurrentLimits.StatorCurrentLimit = 60.0; 
@@ -115,8 +114,18 @@ public class ShooterSub extends SubsystemBase {
 
     public void runProgressiveFeeders(double shooterTargetRPS) {
         // Updated to your latest tuned ratios
-        feederTop.setControl(m_voltageRequest.withOutput(11.0 * (shooterTargetRPS * 1.9 / 100.0)));
-        feederBottomAndMiddle.setControl(m_voltageRequest.withOutput(11.0 * (shooterTargetRPS * 1.8 / 100.0)));
+        // feederTop.setControl(m_voltageRequest.withOutput(11.5 * (shooterTargetRPS * 2 / 100.0)));
+        // feederBottomAndMiddle.setControl(m_voltageRequest.withOutput(11.5 * (shooterTargetRPS * 1.9 / 100.0)));
+        feederTop.set(1);
+        feederBottomAndMiddle.set(0.92);
+    }
+
+    public void runTopFeeder(double shooterTargetRPS) {
+        feederTop.setControl(m_voltageRequest.withOutput(11.5 * (shooterTargetRPS * 1.95 / 100.0)));
+    }
+
+    public void runBottomFeeder(double power) {
+        feederBottomAndMiddle.set(power);
     }
 
     public void stopFeeders() {
@@ -131,66 +140,29 @@ public class ShooterSub extends SubsystemBase {
     private boolean m_isHoming = false;
 
     public double calculateTargetRPS(double distance) {
-        double threshold = 90.4;
-        double gap = 3.0; 
+        boolean m_isFarZone = false;
 
-        if (!m_isFarZone && distance > (threshold + gap)) {
+        if (distance > (ZONE_THRESHOLD + HYSTERESIS)) {
             m_isFarZone = true;
-        } else if (m_isFarZone && distance < (threshold - gap)) {
+        } else if (distance < (ZONE_THRESHOLD - HYSTERESIS)) {
             m_isFarZone = false;
         }
 
         double rpm;
         if (!m_isFarZone) {
+            setHoodToZero();
             rpm = (13.75 * distance) + 2000;
-            m_activeHoodTarget = 0.0; // Standardize 0.0 as the "Bottom" target
-            System.out.println("CLOSE SHOT");
-        
-            if (!getHoodLimitSwitch()) { 
-                shooterHood.set(-0.1);
-                System.out.println("MOVE HOOD DOWN");
-            } else {
-                shooterHood.set(0);
-                shooterHood.setPosition(0);
-                hoodEncoder.setPosition(0);
-                System.out.println("STOPPED HOOD");
-            }
         } else {
-           rpm = (12.25 * distance) + 1750;
-        m_activeHoodTarget = 0.27;
-        double currentPos = hoodEncoder.getAbsolutePosition().getValueAsDouble();
-
-        // Use a "Deadband" of 0.01 to prevent jittering
-            if (Math.abs(currentPos - 0.27) < 0.02) {
-                shooterHood.set(0);
-                System.out.println("FAR POSITION: AT TARGET");
-            } else if (currentPos > 0.27) {
-                // Need to go DOWN
-                shooterHood.set(-0.07);
-                System.out.println("FAR POSITION: MOVING DOWN TO 0.27");
-            } else {
-                // Need to go UP
-                shooterHood.set(0.07);
-                System.out.println("FAR POSITION: MOVING UP TO 0.27");
-            }
+            setHoodToPosition(0.27);
+            rpm = (12.25 * distance) + 1750;
         }
 
-        double rps = rpm / 60.0;
-        this.m_currentShooterTargetRPS = rps; 
-        return rps;
-    }
-
-    public boolean isHoodAtPosition() {
-        if (!m_isFarZone) {
-            return getHoodLimitSwitch(); // Ready if switch is pressed
-        }
-        // Ready if within 0.01 rotations of 0.27
-        System.out.println("AT POSITION?" + (Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.25) < 0.02));
-        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - 0.27) < 0.02;
+        double rps = rpm / 60;
+        return MathUtil.clamp(rps, 45.0, 120);
     }
 
     public boolean isShooterReady(double targetRPS) {
-        double tolerance = 5.0; 
+        double tolerance = 2.0; 
         boolean leftReady = Math.abs(leftShooter.getVelocity().getValueAsDouble() - targetRPS) < tolerance;
         boolean rightReady = Math.abs(rightShooter.getVelocity().getValueAsDouble() - targetRPS) < tolerance;
         boolean centerReady = Math.abs(middleShooter.getVelocity().getValueAsDouble() - targetRPS) < tolerance;
@@ -206,30 +178,44 @@ public class ShooterSub extends SubsystemBase {
         rightShooter.setControl(m_voltageRequest.withOutput(-6));
     }
 
-    public boolean getHoodLimitSwitch() {
+    public boolean isHoodAtBottom() {
         return limitSwitch.get();
+    }
+
+    public boolean isHoodAtPosition(double pos) {
+        return Math.abs(hoodEncoder.getAbsolutePosition().getValueAsDouble() - pos) < 0.02;
+    }
+
+    public void setHoodToZero() {
+        if (isHoodAtBottom()) {
+            shooterHood.set(0);
+            hoodEncoder.setPosition(0);
+        } else {
+            shooterHood.set(-0.1);
+        }
+    }
+
+    public void setHoodToPosition(double pos) {
+        if (isHoodAtPosition(pos)) {
+            shooterHood.set(0);
+        } else if (hoodEncoder.getAbsolutePosition().getValueAsDouble() > pos) {
+            shooterHood.set(-0.09);
+        } else {
+            shooterHood.set(0.09);
+        }
     }
 
     public void zeroHoodEncoder() {
         hoodEncoder.setPosition(0);
     }
 
-    public void setHoodToPass() {
-        double currentPos = hoodEncoder.getAbsolutePosition().getValueAsDouble();
-
-        if (Math.abs(currentPos - 0.38) < 0.02) {
-            shooterHood.set(0);
-        } else if (currentPos > 0.38) {
-            shooterHood.set(-0.07);
-        } else {
-            shooterHood.set(0.07);
-        }
+    public void stopHoodMotor() {
+        shooterHood.set(0);
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter/Hood Target", m_activeHoodTarget);
-        SmartDashboard.putBoolean("Shooter/Is Far Zone", m_isFarZone);
         SmartDashboard.putBoolean("Shooter/Ready", isShooterReady(m_activeHoodTarget)); // Note: this is an estimate in periodic
     }
 }
